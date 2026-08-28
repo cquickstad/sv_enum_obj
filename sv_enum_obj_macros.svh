@@ -32,7 +32,7 @@
         \
         static function enum_obj_t get_by_value(SCALAR_T v); \
             if (!_registry_value.exists(v)) begin \
-                $stacktrace; \
+                `ifdef INCA $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                     $sformatf("%0s has no enumeration for value 'h%0x",\
                         _base_name, v)}); \
@@ -43,7 +43,7 @@
         \
         static function enum_obj_t get_by_name(string n); \
             if (!_registry_name.exists(n)) begin \
-                $stacktrace; \
+                `ifdef INCA $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                     $sformatf("%0s has no enumeration for name '%0s'",\
                         _base_name, n)}); \
@@ -70,7 +70,7 @@
         static function SCALAR_T max_value(); \
             SCALAR_T q[$] = _values.max(); \
             if (q.size() > 0) return q[0]; \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".max_value: ", \
                 $sformatf("Failed to find max value for '%0s' among values %p", \
                     _base_name, _values)}); \
@@ -78,7 +78,7 @@
         static function SCALAR_T min_value(); \
             SCALAR_T q[$] = _values.min(); \
             if (q.size() > 0) return q[0]; \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".min_value: ", \
                 $sformatf("Failed to find min value for '%0s' among values %p", \
                     _base_name, _values)}); \
@@ -320,7 +320,7 @@
         function new(); \
             super.new( `ifdef UVM_PKG_SV _name `endif ); \
             if ((_singleton != null) && (this != _singleton)) begin \
-                $stacktrace; \
+                `ifdef INCA $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", get_full_name(), \
                     ": Attempted to create more than one singleton. Call '", \
                     _name, "::get()' or '", _base_name, \
@@ -333,7 +333,7 @@
         virtual function bit is_singleton(); return 1; endfunction \
         \
         function void pre_randomize(); \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: Singleton enum-object ", \
                 get_full_name(), " must not be randomized because its ", \
                 "value cannot change!  Perhaps you intended ", \
@@ -342,7 +342,7 @@
         endfunction \
         \
         virtual function void set_by_value(SCALAR_T v); \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_value() must not be ", \
                 "called on singleton enum-object ", get_full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -351,7 +351,7 @@
         endfunction \
         \
         virtual function void set(enum_obj_t rhs); \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set() must not be ", \
                 "called on singleton enum-object ", get_full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -360,7 +360,7 @@
         endfunction \
         \
         virtual function void set_by_name(string n); \
-            $stacktrace; \
+            `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_name() must not be ", \
                 "called on singleton enum-object ", get_full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
