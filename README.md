@@ -32,7 +32,7 @@ class axi_item extends uvm_sequence_item;
     ...
 endclass
 ```
-Finally, SystemVerilog offers built-in methods for enums, such as as `.name()`, which returns the string representation of the value.  For example:
+Finally, SystemVerilog offers built-in methods for enums, such as `.name()`, which returns the string representation of the value.  For example:
 ```
 function void check_for_error(xRESP_t xRESP);
     if (!(xRESP inside {OKAY, EXOKAY})) begin
@@ -42,23 +42,35 @@ function void check_for_error(xRESP_t xRESP);
 endfunction
 ```
 ### Problems
-Upon encountering an enum in another package such as a Verification IP (VIP), one finds that they are stuck with that definition. This is because enum definitions are fixed and cannot be changed or expanded. For example, if someone used a software package with `typedef enum {red, green, blue} color;` defined it would be impossible for them to add `purple` or override `red` to `crimson`.  This is violates the 'O' in the SOLID design principles -- the Open-closed principle, which states that _"software entities should be open for extension, but closed for modification."_  This is a major hurdle to reuse. It is not uncommon for a project to need to tweak a behavior or add an opcode to a field that was left with "reserved" space.
+Upon encountering an enum in another package such as a Verification IP (VIP), one finds that they are stuck with that definition. This is because enum definitions are fixed and cannot be changed or expanded. For example, if someone used a software package with `typedef enum {red, green, blue} color;` defined it would be impossible for them to add `purple` or override `red` to `crimson`.  This violates the 'O' in the SOLID design principles -- the Open-closed principle, which states that _"software entities should be open for extension, but closed for modification."_  This is a major hurdle to reuse. It is not uncommon for a project to need to tweak a behavior or add an opcode to a field that was left with "reserved" space.
 
 Additionally, using SystemVerilog enums tends to lead to several code smells:
 - **Switch/Case Statements** - Switch/case statements (or equivalent if/else chains) are almost always a missed opportunity to use polymorphism. They create a dependency fan-out problem that can be solved with a polymorphic abstract base class interface.
-- **Primitive Obsession** - Primitive obsession is the use of primitives (e.g.integers, booleans, strings, or arrays) instead of small objects for simple tasks. In particular, enums are really just fancy integers. Often, functionality related to the enum gets scattered around the codebase, often being duplicated. This leads to other code smells and maintainability problems.
+- **Primitive Obsession** - Primitive obsession is the use of primitives (e.g. integers, booleans, strings, or arrays) instead of small objects for simple tasks. In particular, enums are really just fancy integers. Often, functionality related to the enum gets scattered around the codebase, often being duplicated. This leads to other code smells and maintainability problems.
 - **Shotgun Surgery** - Shotgun surgery is when making a fix or modification to a single concept requires making changes in many different places around the codebase.  It's a sign that the concept was not properly abstracted. A simple concept change suddenly becomes complex in implementation. Some of the needed points of change can be forgotten, leading to bugs.
 
-These problems reveal that, in many use cases, enums are a software design anti-pattern. Verification engineers that use enums are often not using the best tool for the job.
+Verification engineers that use enums are often not using the best tool for the job.
 
 ### Solution
 All of these problems can be overcome by using objects instead of enums.  However, most digital logic verification engineers find it difficult to give up the advantages that come built-in with SystemVerilog's enums. Furthermore, they often lack the time or skill to develop the object-oriented solution and end up developing code that is hard to maintain and difficult to reuse.
 
 **sv_enum_obj** is the library that provides the solution.  It...
-- implements most of the advantages that enums have natively.
-- provides macros to declare classes that represent enumerated types with a similar number of lines of code to the native enums.
+- implements the following advantages that enums have natively:
+    - named encodings
+    - iteration
+    - string name
+    - randomization (using a holder/wrapper)
+    - optional UVM field automation
+- provides macros to declare classes that represent enumerated types with a similar number of lines of code to the native enums (when not including custom method definitions).
 - allows methods to be added to the objects so that all of those switch/case statements can be solved with polymorphism. All of that code scattered around the codebase can be consolidated into an object that encapsulates the concept being abstracted.
 - allows new enum-objects to be easily added. Downstream projects can reuse your code without requiring intrusive changes. New enumerators can be added to the enumeration. Existing enumerators can be overridden.
+
+Note that sv_enum_obj does not or cannot address the following aspects of SystemVerilog's native enums:
+- sv_enum_obj is not synthesizable; not for RTL or wires.
+- sv_enum_obj is not a drop-in replacement for native enums.
+- sv_enum_obj cannot natively be used in `inside {red, blue}` type statements; users must use `.value` or `get_singleton()` instead.
+- sv_enum_obj cannot natively be used as case items, in packed packing, or with implicit integral conversion.
+- Constraints cannot call the polymorphic methods you add to sv_enum_obj without a side-effect-free helper.
 
 ## How To Use
 ### Declaration
@@ -121,7 +133,7 @@ var.set(green::get()); // Good. Mutable.
 
 If UVM is not imported into your environment, then use `new()`, but if you are using UVM, call `create()` instead:
 ```
-color var = color::type_id::create("var", this);
+color var = color::type_id::create("var");
 ```
 
 Factory overrides are possible for any new base/wrapper object derived from `color`.
@@ -134,7 +146,7 @@ Factory overrides are possible for any new base/wrapper object derived from `col
 ...
 set_type_override_by_type(color::get_type(), my_extended_color::get_type())
 ...
-color var = color::type_id::create("var", this); // Actually creates my_extended_color
+color var = color::type_id::create("var"); // Actually creates my_extended_color
 var.set_by_name("turquoise"); // Good: "turquoise" available to my_extended_color
 var.set_by_name("red"); // Good: "red" inherited from parent, color.
 ...
@@ -238,7 +250,7 @@ c.set(blue::get()); // c is holding a mutable wrapper object holding blue
 ```
 or
 ```
-color_enum c = color::get_by_name("blue"); // c is pointing to the blue immutable singleton
+color c = color::get_by_name("blue"); // c is pointing to the blue immutable singleton
 ```
 ---
 ### Comparing enums
@@ -339,7 +351,7 @@ $display("%0s is after green", c.get_enum_name());
 ```
 or
 ```
-color_enum c = new();
+color c = new();
 c.set(green::get());
 c.set(c.get_next());
 $display("%0s is after green", c.get_enum_name());
@@ -391,14 +403,20 @@ endfunction
 write
 ```
 `DECL_SV_ENUM_OBJ_BEGIN(animal, logic [3:0])
+
+    // NOTE: When implementing methods that can be called on the base class you
+    //       must sync the internal object to the current value and then pass
+    //       the method call through to the held object from the base-class,
+    //       which is also doubling as the holder/wrapper.
+
     virtual function int get_num_legs();
-        _init_obj();
-        return _obj.get_num_legs();
+        _init_obj(); // Syncs the internal object to the 'value' member.
+        return _obj.get_num_legs(); // Pass-through
     endfunction
 
     virtual function bit can_ride();
-        _init_obj();
-        return _obj.can_ride();
+        _init_obj(); // Syncs the internal object to the 'value' member.
+        return _obj.can_ride(); // Pass-through
     endfunction
 `DECL_SV_ENUM_OBJ_END
 
@@ -437,7 +455,7 @@ function automatic string explain_animal(animal a);
         a.get_enum_name(), legs, ride);
 endfunction
 ```
-To illustrate how extendable the class-based solution is, more animals can be added simply by declaring them. The original code need not be touched and may be even imported from another package.  It just works.
+To illustrate how extendable the class-based solution is, as you project grows, more animals can be added simply by declaring them.
 
 This illustrates the _dependency inversion principle_ (the D in SOLID). Both `explain_animal()` and the individual animals depend on the `animal` base class.
 ```
@@ -451,13 +469,59 @@ This illustrates the _dependency inversion principle_ (the D in SOLID). Both `ex
     virtual function bit can_ride(); return 1; endfunction
 `DECL_SV_ENUM_OBJ_INST_END
 ```
-Even existing enum objects can be overridden with polymorphism and the sv_enum_obj's built-in registry:
+Even existing enumerator singletons can be overridden with polymorphism and the sv_enum_obj's built-in registry. By simply declaring them with the same value, they replace the previously declared/registered enumerator:
 ```
 `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, maimed_dog, 4'b0010)
     virtual function int get_num_legs(); return 3; endfunction
     virtual function bit can_ride(); return 0; endfunction
 `DECL_SV_ENUM_OBJ_INST_END
 ```
+
+_Note that the UVM Factory cannot be used to override individual enumerator singletons. Use the above technique instead._
+
+---
+### Extending Another Package or Project
+Be careful how you extend code from another package.  The macros easily allow "monkey-patching."  This is generally considered a last-resort technique because it is implicit, order-dependent, and easy to break later.  An example of monkey-patching:
+```
+package original_pkg;
+    `DECL_SV_ENUM_OBJ(color)
+    `DECL_SV_ENUM_OBJ_INST(color, red)
+endpackage
+...
+package later_pkg;
+    // This monkey-patches a new enumerator into original_pkg, affecting all
+    // other code referencing/using the enumeration in the original_pkg.
+    // This is unexpected!
+    // AVOID THIS!!! LAST RESORT ONLY!!!
+    `DECL_SV_ENUM_OBJ_INST(original_pkg::color, blue)
+endpackage
+```
+
+Avoid monkey-patching by using the 'O' (Open-Closed Principle) in SOLID.  Extend the original class using polymorphism:
+```
+package original_pkg;
+    `DECL_SV_ENUM_OBJ(color)
+    `DECL_SV_ENUM_OBJ_INST(color, red)
+endpackage
+...
+package later_pkg;
+    `DECL_SV_ENUM_OBJ_EXTEND(extended_color, original_pkg::color)
+    `DECL_SV_ENUM_OBJ_INST(extended_color, blue)
+endpackage
+```
+In the above example `red` stays a child of `color` and `color` has no references to the new `blue` color.  `extended_color` picks up `red` from its parent `color` and then `blue` is added to it.  (Note that `blue` is a child of `extended_color`, but `red` remains a child of `color`.)
+
+How can `blue` be used in existing code without money-patching? This is where the importance of writing good code comes into play--specifically avoiding falling into the "new is glue" trap that causes the violation of S, O, and D in SOLID.  When writing code that needs to create an enumerated base class, don't call `new()` and instead use something like a Factory Design Pattern or a Builder Design Pattern.
+
+Users of UVM can go ahead and use UVM's factory, which should already be familiar. (Although if UVM is not imported into your environment, you are not forced to use it.)  For example:
+```
+// Wherever original_pkg::color::type_id::create() is called, the factory will
+// provide a new instance of extended_color instead:
+set_type_override_by_type(original_pkg::color::get_type(),
+                          later_pkg::extended_color::get_type());
+```
+_Note that the UVM Factory cannot be used to override individual enumerator singletons. Instead use DECL_SV_ENUM_OBJ_INST to declare a new enumerator, but specify the `value` of the enumerator you wish to override._
+
 ---
 ### Indexing Into an Associative Array
 Instead of
@@ -466,7 +530,7 @@ int aa[animal];
 aa[dog] = 123;
 assert(aa.exists(dog));
 foreach (aa[a]) begin
-    $display("Animal %0s has value %0d", a.name(), aa[a]);
+    $display("Animal %0s was a key to look-up value %0d", a.name(), aa[a]);
 end
 ```
 write
@@ -475,7 +539,7 @@ int aa[animal];
 aa[bird::get()] = 123;
 assert(aa.exists(bird::get()));
 foreach (aa[i]) begin
-    $display("Animal %0s has value %0d", i.get_enum_name(), aa[i]);
+    $display("Animal %0s was a key to look-up value %0d", i.get_enum_name(), aa[i]);
 end
 ```
 
@@ -507,7 +571,7 @@ class item extends uvm_object;
     endfunction
 endclass
 ```
-Instead, because of the quoted SystemVerilog limitations, you must write write helper functions that have no side effects:
+Instead, because of the quoted SystemVerilog limitations, you must write helper functions that have no side effects:
 ```
 class item extends uvm_object;
     rand animal a;

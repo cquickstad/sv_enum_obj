@@ -201,17 +201,20 @@
 // =============================================================================
 // DECL_SV_ENUM_OBJ_INST_BEGIN / END  — one enumerator (singleton class)
 //
-//   `DECL_SV_ENUM_OBJ_INST(color, red)           // encoding = next_unused_value()
-//   `DECL_SV_ENUM_OBJ_INST(color, violet, 3)     // explicit encoding
+//   `DECL_SV_ENUM_OBJ_INST(color, red)        // encoding = next_unused_value()
+//   `DECL_SV_ENUM_OBJ_INST(color, violet, 3)  // explicit encoding
 //
 // Declare INST macros *after* the matching DECL_SV_ENUM_OBJ[_BEGIN].
 // Registration order is declaration order (static initializers).
 //
-// Override: a later INST with an already-used encoding replaces the label in
-// `names()`, redirects `::get()` / `get_by_value()` to the new singleton, and
-// chains `name()` / `full_name()` of the earlier INST to the final name.
+// Override: a later INST with an already-used encoding (value) replaces the
+//  label in`names()`, redirects `::get()` / `get_by_value()` to the new
+// singleton, and chains `name()` / `full_name()` of the earlier INST to the
+// final name.
 //
-// Duplicate *names* with different encodings are fatal.
+// Duplicate *names* with different values are fatal.
+// Duplicate names with the same value are begrudgingly allowed.
+// (Duplicate names require defining each is a different package.)
 //
 // Do not `new()`, `randomize()`, or `set_*()` a singleton. Use `ENUM::get()`.
 // =============================================================================
@@ -422,21 +425,19 @@
 // =============================================================================
 // DECL_SV_ENUM_OBJ_EXTEND[_BEGIN/_END]
 //
-// New enum *type* in this package, with its own registries, seeded from BASE.
-// BASE is left unchanged. Do not `import` BASE under the same simple name as
-// ENUM_OBJ_TYPE (name collision). Pass the qualified type: foo::animal.
+// New enum *type* with its own registries, seeded from BASE.
+// BASE is left unchanged.
 //
-//   package bar;
-//       import sv_enum_obj_pkg::*;
-//       `DECL_SV_ENUM_OBJ_EXTEND(animal, foo::animal)
-//       `DECL_SV_ENUM_OBJ_INST(animal, dog)
-//   endpackage
+//   `DECL_SV_ENUM_OBJ(animal)
+//   `DECL_SV_ENUM_OBJ_INST(animal, dog)
 //
-// Copied encodings keep the parent's singleton handles, so
-//   bar::animal::get_by_name("cat") == foo::cat::get()
-// Overriding a copied encoding in this package updates only *this* type's
-// maps. It does not call _set_override on the parent singleton (foo is safe).
-// That last part requires the $cast guard in _register — see INST note below.
+//   `DECL_SV_ENUM_OBJ_EXTEND(my_animal, animal)
+//   `DECL_SV_ENUM_OBJ_INST(my_animal, cat)
+//
+// In the above example:
+//  * animal contains only dog.
+//  * my_animal contains both dog and cat.
+//
 // =============================================================================
 
 `define DECL_SV_ENUM_OBJ_EXTEND_BEGIN(ENUM_OBJ_TYPE, BASE_ENUM_OBJ_TYPE) \

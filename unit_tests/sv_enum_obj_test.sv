@@ -436,8 +436,14 @@ endpackage
 
 // The subsequent package represents another project extending and modifying
 // the functionality in the original project without touching the original code.
+// WARNING: THIS IS AN EXAMPLE OF MONKEY-PATCHING. THIS TECHNIQUE IS A LAST-RESORT.
 package subsequent_pkg;
     import original_pkg::*;
+
+    // WARNING!!!
+    //
+    // THIS IS AN EXAMPLE OF MONKEY-PATCHING.
+    // THIS TECHNIQUE IS A LAST-RESORT.
 
     // Add new animals from another package
     `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, deer, 4'b0011)
@@ -465,6 +471,7 @@ endpackage
 
     // subsequent_pkg has modified original_pkg without changing it's code:
     string s = original_pkg::explain_all_animals();
+    // subsequent_pkg monkey-patched the original_pkg
     `ASSERT_STR_EQ(s,
         {"\nThe bird has 2 legs and you may not ride it.",
          "\nThe horse has 4 legs and you may ride it.",
@@ -548,6 +555,8 @@ package first_pkg;
 endpackage
 
 package second_pkg;
+    // This is object-oriented inheritance and should be preferred over
+    // the monkey-patching approach.
     `DECL_SV_ENUM_OBJ_EXTEND(opcode, first_pkg::opcode)
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, shift_left)
         virtual function int calc(int a, int b); return a << b; endfunction
