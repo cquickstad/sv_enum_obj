@@ -292,7 +292,7 @@
         static function enum_obj_t prev(); \
             int qi[$] = _values.find_first_index() with (item == _value); \
             int i = qi[0] - 1; \
-            if (i <= 0) i = _values.size() - 1; \
+            if (i < 0) i = _values.size() - 1; \
             return _registry_value[_values[i]]; \
         endfunction \
         \

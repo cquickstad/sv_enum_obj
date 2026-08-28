@@ -656,6 +656,12 @@ endpackage
     `ASSERT_EQ(one_single_pkg::third_op::next(), one_single_pkg::bad_add::get())
     `ASSERT_EQ(one_single_pkg::bad_add::prev(), one_single_pkg::third_op::get())
 
+    // 1 -> 0 case
+    `ASSERT_EQ(one_single_pkg::sub::prev(), one_single_pkg::add::get())
+
+    // size()-2 -> size()-1 case
+    `ASSERT_EQ(one_single_pkg::add::next(), one_single_pkg::sub::get())
+
     good.set_by_name("sub");
     `ASSERT_EQ(good.get_next(), one_single_pkg::add::get())
     bad.set_by_name("sub");
