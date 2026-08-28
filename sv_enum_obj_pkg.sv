@@ -22,6 +22,17 @@
 `ifndef __SV_ENUM_OBJ_PKG_SV__
 `define __SV_ENUM_OBJ_PKG_SV__
 
+// MAJOR — macro names change, holder/singleton contract changes, a $fatal
+//         becomes silent or the reverse, UVM detect changes in a way that
+//         alters generated classes.
+// MINOR — new macro, new method, new documented behavior
+// PATCH — bug fix, comment, test, README typo.
+//
+`define SV_ENUM_OBJ_VERSION_MAJOR 0
+`define SV_ENUM_OBJ_VERSION_MINOR 2
+`define SV_ENUM_OBJ_VERSION_PATCH 0
+`define SV_ENUM_OBJ_VERSION "0.2.0"
+
 package sv_enum_obj_pkg;
 
 `ifdef UVM_POST_VERSION_1_1
