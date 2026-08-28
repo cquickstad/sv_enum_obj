@@ -173,9 +173,6 @@
             end \
         endfunction \
         \
-        // protected virtual function void _set_override(enum_obj_t new_type_singleton); \
-        // endfunction \
-        \
         constraint value_must_exist_c {value inside {_values};} \
         function void post_randomize(); _init_obj(); endfunction \
         \
@@ -236,10 +233,6 @@
                 _base_name, "'"}); \
         endfunction \
         \
-        // protected virtual function void _set_override(enum_obj_t new_type_singleton); \
-        //     _override = new_type_singleton; \
-        // endfunction \
-        \
         static bit _side_effect = _register(); \
         static function bit _register(); \
             ENUM new_me = new(); \
@@ -284,7 +277,6 @@
                         _base_name, prev_name, prev_enum, \
                         _base_name, _name, _singleton, _value); \
                 end \
-                // prev_enum._set_override(_singleton); // "protected," but can call _set_override() because prev_enum is the same type. \
                 _registry_name[prev_name] = _singleton; \
             end else begin \
                 if (_debug) begin \
