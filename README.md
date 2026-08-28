@@ -72,6 +72,20 @@ Note that sv_enum_obj does not or cannot address the following aspects of System
 - sv_enum_obj cannot natively be used as case items, in packed packing, or with implicit integral conversion.
 - Constraints cannot call the polymorphic methods you add to sv_enum_obj without a side-effect-free helper.
 
+## Compatibility
+
+The library itself does not require UVM. When UVM is present, factory
+registration, `create()`, field automation, `compare()`, and type
+overrides are compiled in.
+
+| Piece | Tested | Notes |
+|---|---|---|
+| Simulator | Cadence Xcelium (`xrun`) |  |
+| UVM | Accellera UVM 1.2 |  |
+| UVM 1.1d / IEEE 1800.2-2020 / 1800.2-2023 | Not tested | APIs used are the stable `uvm_object` / factory subset; expected to work, not guaranteed |
+
+UVM is detected with `` `ifdef UVM_POST_VERSION_1_1 ``.
+
 ## How To Use
 ### Declaration
 Instead of
