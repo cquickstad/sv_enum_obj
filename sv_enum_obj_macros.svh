@@ -241,14 +241,35 @@
         static function bit _register(); \
             ENUM new_me = new(); \
             _singleton = new_me; \
-            // if (_name inside {_names}) begin \
-            //     $fatal(1, {"SV ENUM OBJECT FATAL: An enumerator's name ", \
-            //         "(", _base_name, ".", _name, ") matched another ", \
-            //         "enumerator's name (probably from another package ", \
-            //         "because it is not possible to declare ", \
-            //         "two classes of the same name)."}); \
-            //     return 0; \
-            // end \
+            if (_name inside {_names}) begin \
+                if (_value == _registry_name[_name].get_value()) begin \
+                    $display({"SV ENUM OBJECT CAUTION: An enumerator's ", \
+                        "name (", _base_name, ".", _name, ", handle=", \
+                        $sformatf("%0x", _singleton), ") matched another ", \
+                        "enumerator's name (", \
+                        _registry_name[_name].get_full_name(), ", handle=", \
+                        $sformatf("%0x", _registry_name[_name]), \
+                        "). This is allowable because the values match ", \
+                        "(value=", $sformatf("%p", _value), "). ", \
+                        "The enumerators are in different packages, ", \
+                        "because it is not possible to declare two classes ", \
+                        "of the same name in the same package."}); \
+                end else begin \
+                    $fatal(1, {"SV ENUM OBJECT FATAL: An enumerator's ", \
+                        "name (", _base_name, ".", _name, ", handle=", \
+                        $sformatf("%0x", _singleton), ", value=", \
+                        $sformatf("%p", _value), ") matched another ", \
+                        "enumerator's name (", \
+                        _registry_name[_name].get_full_name(), ", handle=", \
+                        $sformatf("%0x", _registry_name[_name]), \
+                        ", value=", \
+                        $sformatf("%p", _registry_name[_name].get_value()), \
+                        "). This is not allowed because the values do not ", \
+                        "match. Note that the enumerators are in different ", \
+                        "packages, because it is not possible to declare ", \
+                        "two classes of the same name in the same package."}); \
+                end \
+            end \
             if (_value inside {_values}) begin \
                 enum_obj_t prev_enum = _registry_value[_value]; \
                 string prev_name = prev_enum.get_enum_name(); \
