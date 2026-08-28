@@ -288,6 +288,7 @@
             end \
             _registry_value[_value] = _singleton; \
             _registry_name[_name] = _singleton; \
+            return 1; \
         endfunction \
         \
         static function SCALAR_T value(); \
