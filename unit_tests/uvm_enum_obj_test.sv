@@ -37,22 +37,22 @@ import sv_enum_obj_pkg::*;
 `DECL_SV_ENUM_OBJ_END
 `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
     virtual function int calc(int a, int b); return a + b; endfunction
-`DECL_SV_ENUM_OBJ_END
+`DECL_SV_ENUM_OBJ_INST_END
 `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
     virtual function int calc(int a, int b); return a - b; endfunction
-`DECL_SV_ENUM_OBJ_END
+`DECL_SV_ENUM_OBJ_INST_END
 
 
 `DECL_SV_ENUM_OBJ_EXTEND(bad_opcode, opcode)
 `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_add, add::value())
     virtual function int calc(int a, int b); return a - b; endfunction
-`DECL_SV_ENUM_OBJ_END
+`DECL_SV_ENUM_OBJ_INST_END
 `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_sub, sub::value())
     virtual function int calc(int a, int b); return a + b; endfunction
-`DECL_SV_ENUM_OBJ_END
+`DECL_SV_ENUM_OBJ_INST_END
 `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, third_op)
     virtual function int calc(int a, int b); return 0; endfunction
-`DECL_SV_ENUM_OBJ_END
+`DECL_SV_ENUM_OBJ_INST_END
 
 
 `RUN_PHASE_TEST(test_factory_override_of_holder_object)

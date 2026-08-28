@@ -541,20 +541,20 @@ package first_pkg;
     `DECL_SV_ENUM_OBJ_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
 endpackage
 
 package second_pkg;
     `DECL_SV_ENUM_OBJ_EXTEND(opcode, first_pkg::opcode)
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, shift_left)
         virtual function int calc(int a, int b); return a << b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub, first_pkg::sub::value())
         virtual function int calc(int a, int b); return (a > b) ? (a - b) : (b - a); endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
 endpackage
 
 `SV_TEST(test_sv_enum_extended_in_another_package_without_changing_the_original)
@@ -589,21 +589,21 @@ package one_single_pkg;
     `DECL_SV_ENUM_OBJ_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
 
     `DECL_SV_ENUM_OBJ_EXTEND(bad_opcode, opcode)
     `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_add, add::value())
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_sub, sub::value())
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
     `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, third_op)
         virtual function int calc(int a, int b); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_END
+    `DECL_SV_ENUM_OBJ_INST_END
 endpackage
 
 `SV_TEST(test_sv_enum_extended_in_the_same_package_without_changing_the_original)
