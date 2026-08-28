@@ -114,6 +114,7 @@ The line `` `DECL_SV_ENUM_OBJ_INST(color, blue)`` will declare the following cla
 
 The `red`, `green`, and `blue` enumerators are singleton classes that may be used directly. They are immutable and a fatal will result from attempting to change them or `new()` them (use `::get()` instead). Where randomization is required, the `color` wrapper/holder class should be created with `new()`, after which `.randomize()` may be called and the `value` member referenced from constraints.  The `color` class may also be used as a handle to any of the immutable singleton enumerators.  You may use the `is_holder()` and `is_singleton()` methods to determine what is being pointed to by the handle and avoid triggering a fatal error.
 
+Adding the `+DEBUG_SV_ENUM_OBJ` plusarg to the command line will cause the library to print enumerator registrations and overrides.
 ---
 
 ### Allocation
