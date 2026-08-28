@@ -79,7 +79,7 @@ import sv_enum_obj_pkg::*;
 `RUN_PHASE_TEST(test_uvm_compare_methods_of_singletons)
     opcode a = sub::get();
     opcode b = add::get();
-    `ASSERT_FALSE(a.compare(b))
+    `ASSERT_FALSE_LOG(a.compare(b), {a.get_enum_name(), " same as ", b.get_enum_name()})
     b = sub::get();
-    `ASSERT_TRUE(b.compare(a))
+    `ASSERT_TRUE_LOG(b.compare(a), {b.get_enum_name(), " different from ", a.get_enum_name()})
 `END_RUN_PHASE_TEST

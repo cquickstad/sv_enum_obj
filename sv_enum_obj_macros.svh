@@ -305,6 +305,7 @@
                     _name, "::get()' or '", _base_name, \
                     "::get_by_value(<value>)' instead."}); \
             end \
+            super.value = _value; // Allows .compare() to work using uvm field macro \
         endfunction \
         \
         virtual function bit is_holder(); return 0; endfunction \
