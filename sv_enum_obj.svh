@@ -53,9 +53,9 @@
 //------------------------------------------------------------------------------
 
 
-virtual class sv_enum_obj_base `ifdef UVM_PKG_SV extends uvm_object `endif ;
+virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `endif ;
 
-`ifdef UVM_PKG_SV
+`ifdef UVM_POST_VERSION_1_1
     function new(string name);
         super.new(name);
     endfunction
@@ -109,8 +109,8 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     // when not inside a constraint.
     rand SCALAR_T value;
 
-    function new( `ifdef UVM_PKG_SV string name="sv_enum_obj" `endif );
-        super.new( `ifdef UVM_PKG_SV name `endif );
+    function new( `ifdef UVM_POST_VERSION_1_1 string name="sv_enum_obj" `endif );
+        super.new( `ifdef UVM_POST_VERSION_1_1 name `endif );
         _init_randomizable_value();
     endfunction
 

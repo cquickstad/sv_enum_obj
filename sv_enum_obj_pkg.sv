@@ -24,7 +24,7 @@
 
 package sv_enum_obj_pkg;
 
-`ifdef UVM_PKG_SV
+`ifdef UVM_POST_VERSION_1_1
     import uvm_pkg::*;
     `include "uvm_macros.svh"
 `endif

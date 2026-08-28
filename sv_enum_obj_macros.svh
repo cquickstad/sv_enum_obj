@@ -133,13 +133,13 @@
         \
         `_SV_ENUM_OBJ_TYPE_STATICS \
         \
-        `ifdef UVM_PKG_SV \
+        `ifdef UVM_POST_VERSION_1_1 \
         `uvm_object_utils_begin(ENUM_OBJ_TYPE) \
             `uvm_field_int(value, UVM_ALL_ON) \
         `uvm_object_utils_end \
         `endif \
-        function new(`ifdef UVM_PKG_SV string name=`"ENUM_OBJ_TYPE`" `endif); \
-            super.new(`ifdef UVM_PKG_SV name `endif); \
+        function new(`ifdef UVM_POST_VERSION_1_1 string name=`"ENUM_OBJ_TYPE`" `endif); \
+            super.new(`ifdef UVM_POST_VERSION_1_1 name `endif); \
         endfunction \
         \
         virtual function void set(enum_obj_t rhs); \
@@ -318,7 +318,7 @@
         endfunction \
         \
         function new(); \
-            super.new( `ifdef UVM_PKG_SV _name `endif ); \
+            super.new( `ifdef UVM_POST_VERSION_1_1 _name `endif ); \
             if ((_singleton != null) && (this != _singleton)) begin \
                 `ifdef INCA $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", get_full_name(), \
@@ -461,7 +461,7 @@
             return 1; \
         endfunction \
         \
-        `ifdef UVM_PKG_SV \
+        `ifdef UVM_POST_VERSION_1_1 \
         `uvm_object_utils(ENUM_OBJ_TYPE) \
         function new(string name=`"ENUM_OBJ_TYPE`"); \
             super.new(name); \
