@@ -356,6 +356,7 @@ c.set(green::get());
 c.set(c.get_next());
 $display("%0s is after green", c.get_enum_name());
 ```
+_Note that iteration order for `prev`/`next` is declaration order (same as native SV), not `value` order._
 ---
 ### Adding Methods
 Instead of
