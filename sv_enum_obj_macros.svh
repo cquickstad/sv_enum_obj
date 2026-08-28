@@ -397,8 +397,6 @@
     `DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE) \
     `DECL_SV_ENUM_OBJ_INST_END
 
-`endif // __SV_ENUM_OBJ_MACROS_SV__
-
 
 // =============================================================================
 // DECL_SV_ENUM_OBJ_EXTEND[_BEGIN/_END]
@@ -486,3 +484,5 @@
 `define DECL_SV_ENUM_OBJ_EXTEND(ENUM_OBJ_TYPE, BASE_ENUM_OBJ_TYPE) \
     `DECL_SV_ENUM_OBJ_EXTEND_BEGIN(ENUM_OBJ_TYPE, BASE_ENUM_OBJ_TYPE) \
     `DECL_SV_ENUM_OBJ_EXTEND_END
+
+`endif // __SV_ENUM_OBJ_MACROS_SV__
