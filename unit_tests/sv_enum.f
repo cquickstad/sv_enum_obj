@@ -11,3 +11,4 @@
 -disable_sem2009
 -access rwc
 -incdir $UVM_UNIT_HOME
+-incdir ../

@@ -15,5 +15,6 @@
 +UVM_NO_RELNOTES
 -uvmhome $UVM_UNIT_HOME/uvm_unit-uvm-1.2
 
+-incdir ../
 -incdir $UVM_UNIT_HOME
 -incdir $UVM_UNIT_HOME/uvm_unit-uvm-1.2/src
