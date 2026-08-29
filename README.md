@@ -527,7 +527,7 @@ endpackage
 ```
 In the above example `red` stays a child of `color` and `color` has no references to the new `blue` color.  `extended_color` picks up `red` from its parent `color` and then `blue` is added to it.  (Note that `blue` is a child of `extended_color`, but `red` remains a child of `color`.)
 
-How can `blue` be used in existing code without money-patching? This is where the importance of writing good code comes into play--specifically avoiding falling into the "new is glue" trap that causes the violation of S, O, and D in SOLID.  When writing code that needs to create an enumerated base class, don't call `new()` and instead use something like a Factory Design Pattern or a Builder Design Pattern.
+How can `blue` be used in existing code without monkey-patching? This is where the importance of writing good code comes into play--specifically avoiding falling into the "new is glue" trap that causes the violation of S, O, and D in SOLID.  When writing code that needs to create an enumerated base class, don't call `new()` and instead use something like a Factory Design Pattern or a Builder Design Pattern.
 
 Users of UVM can go ahead and use UVM's factory, which should already be familiar. (Although if UVM is not imported into your environment, you are not forced to use it.)  For example:
 ```
