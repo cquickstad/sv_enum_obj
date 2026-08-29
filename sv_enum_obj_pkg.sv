@@ -30,8 +30,8 @@
 //
 `define SV_ENUM_OBJ_VERSION_MAJOR 0
 `define SV_ENUM_OBJ_VERSION_MINOR 2
-`define SV_ENUM_OBJ_VERSION_PATCH 0
-`define SV_ENUM_OBJ_VERSION "0.2.0"
+`define SV_ENUM_OBJ_VERSION_PATCH 1
+`define SV_ENUM_OBJ_VERSION "0.2.1"
 
 package sv_enum_obj_pkg;
 

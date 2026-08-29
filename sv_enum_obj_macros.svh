@@ -62,9 +62,25 @@
             return _names; \
         endfunction \
         static function enum_obj_t first(); \
+            if (_values.size() == 0) begin \
+                `ifdef INCA $stacktrace; `endif \
+                $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, " has no ", \
+                    "defined enumerations. Therefore first() has nothing to ", \
+                    "return. Please use DECL_SV_ENUM_OBJ_INST to declare an ", \
+                    "enumerator."}); \
+                return null; \
+            end \
             return _registry_value[_values[0]]; \
         endfunction \
         static function enum_obj_t last(); \
+            if (_values.size() == 0) begin \
+                `ifdef INCA $stacktrace; `endif \
+                $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, " has no ", \
+                    "defined enumerations. Therefore last() has nothing to ", \
+                    "return. Please use DECL_SV_ENUM_OBJ_INST to declare an ", \
+                    "enumerator."}); \
+                return null; \
+            end \
             return _registry_value[_values[_values.size()-1]]; \
         endfunction \
         static function SCALAR_T max_value(); \

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1]
+### Fixed
+- README typo
+- Possible unprotected indexing into empty _values[] array.
+
 ## [0.2.0]
 ### Fixed
 - `prev()` wrapped from index 1 instead of going to index 0.
