@@ -363,14 +363,14 @@ $display("%0s is after green", c.name());
 write
 ```
 color c = green::next();
-$display("%0s is after green", c.get_enum_name());
+$display("%0s is after green", c.name());
 ```
 or
 ```
 color c = new();
 c.set(green::get());
 c.set(c.get_next());
-$display("%0s is after green", c.get_enum_name());
+$display("%0s is after green", c.name());
 ```
 _Note that iteration order for `prev`/`next` is declaration order (same as native SV), not `value` order._
 ---
@@ -469,7 +469,7 @@ function automatic string explain_animal(animal a);
     legs = a.get_num_legs();
     ride = a.can_ride() ? "may" : "may not";
     return $sformatf("The %0s has %0d legs and you %0s ride it.",
-        a.get_enum_name(), legs, ride);
+        a.name(), legs, ride);
 endfunction
 ```
 To illustrate how extendable the class-based solution is, as you project grows, more animals can be added simply by declaring them.
@@ -556,7 +556,7 @@ int aa[animal];
 aa[bird::get()] = 123;
 assert(aa.exists(bird::get()));
 foreach (aa[i]) begin
-    $display("Animal %0s was a key to look-up value %0d", i.get_enum_name(), aa[i]);
+    $display("Animal %0s was a key to look-up value %0d", i.name(), aa[i]);
 end
 ```
 

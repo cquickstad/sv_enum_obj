@@ -186,7 +186,7 @@
         \
         virtual function sv_enum_obj_base get_singleton(); _init_obj(); return _obj.get_singleton(); endfunction \
         virtual function enum_obj_t get_``ENUM_OBJ_TYPE``_singleton(); _init_obj(); return _obj.get_``ENUM_OBJ_TYPE``_singleton(); endfunction \
-        virtual function string get_enum_name(); _init_obj(); return _obj.get_enum_name(); endfunction \
+        virtual function string name(); _init_obj(); return _obj.name(); endfunction \
         virtual function string get_enum_type_name(); _init_obj(); return _obj.get_enum_type_name(); endfunction \
         virtual function _string_q get_names(); return _names; endfunction \
         virtual function string get_full_name(); _init_obj(); return _obj.get_full_name(); endfunction \
@@ -304,7 +304,7 @@
             e = _lookup_by_value(_value); \
             if (e != null) begin \
                 enum_obj_t prev_enum = e; \
-                string prev_name = prev_enum.get_enum_name(); \
+                string prev_name = prev_enum.name(); \
                 // Replace the name, keeping the order the same: \
                 int qi[$] = _names.find_first_index() with (item == prev_name); \
                 _names[qi[0]] = _name; \
@@ -329,10 +329,6 @@
         \
         static function SCALAR_T value(); \
             return _value; \
-        endfunction \
-        static function string name(); \
-            enum_obj_t e = get_by_value(_value); \
-            return e.get_enum_name(); \
         endfunction \
         static function string full_name(); \
             enum_obj_t e = get_by_value(_value); \
@@ -410,7 +406,7 @@
         virtual function enum_obj_t get_``ENUM_OBJ_TYPE``_singleton(); \
             return get_by_value(_value); \
         endfunction \
-        virtual function string get_enum_name(); \
+        virtual function string name(); \
             return _name; \
         endfunction \
         virtual function string get_enum_type_name(); \

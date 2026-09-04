@@ -44,13 +44,6 @@ import sv_enum_obj_pkg::*;
     `ASSERT_EQ(purple::value(), 3)
     `ASSERT_EQ(violet::value(), 3)
 
-    `ASSERT_STR_EQ(red::name(), "red")
-    `ASSERT_STR_EQ(green::name(), "green")
-    `ASSERT_STR_EQ(blue::name(), "blue")
-    `ASSERT_STR_EQ(purple::name(), "indigo") // Double override!
-    `ASSERT_STR_EQ(violet::name(), "indigo") // Override!
-    `ASSERT_STR_EQ(indigo::name(), "indigo")
-
     `ASSERT_STR_EQ(red::full_name(), "color.red")
     `ASSERT_STR_EQ(green::full_name(), "color.green")
     `ASSERT_STR_EQ(blue::full_name(), "color.blue")
@@ -68,7 +61,7 @@ import sv_enum_obj_pkg::*;
     e = c;
     `ASSERT_EQ(e.get_int_value(), 0)
     `ASSERT_EQ(c.get_value(), 0)
-    `ASSERT_STR_EQ(e.get_enum_name(), "red")
+    `ASSERT_STR_EQ(e.name(), "red")
     `ASSERT_STR_EQ(e.get_full_name(), "color.red")
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -76,15 +69,15 @@ import sv_enum_obj_pkg::*;
     `ASSERT_EQ(e.get_singleton(), c.get_color_singleton())
     e = c.get_singleton();
     c = c.get_color_singleton();
-    `ASSERT_STR_EQ(e.get_enum_name(), "red")
-    `ASSERT_STR_EQ(c.get_enum_name(), "red")
+    `ASSERT_STR_EQ(e.name(), "red")
+    `ASSERT_STR_EQ(c.name(), "red")
 
 
     c = green::get();
     e = c;
     `ASSERT_EQ(e.get_int_value(), 1)
     `ASSERT_EQ(c.get_value(), 1)
-    `ASSERT_STR_EQ(e.get_enum_name(), "green")
+    `ASSERT_STR_EQ(e.name(), "green")
     `ASSERT_STR_EQ(e.get_full_name(), "color.green")
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -93,7 +86,7 @@ import sv_enum_obj_pkg::*;
     e = c;
     `ASSERT_EQ(e.get_int_value(), 2)
     `ASSERT_EQ(c.get_value(), 2)
-    `ASSERT_STR_EQ(e.get_enum_name(), "blue")
+    `ASSERT_STR_EQ(e.name(), "blue")
     `ASSERT_STR_EQ(e.get_full_name(), "color.blue")
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -102,7 +95,7 @@ import sv_enum_obj_pkg::*;
     e = c;
     `ASSERT_EQ(e.get_int_value(), 3)
     `ASSERT_EQ(c.get_value(), 3)
-    `ASSERT_STR_EQ(e.get_enum_name(), "indigo") // Double override!
+    `ASSERT_STR_EQ(e.name(), "indigo") // Double override!
     `ASSERT_STR_EQ(e.get_full_name(), "color.indigo") // Double override!
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -111,7 +104,7 @@ import sv_enum_obj_pkg::*;
     e = c;
     `ASSERT_EQ(e.get_int_value(), 3)
     `ASSERT_EQ(c.get_value(), 3)
-    `ASSERT_STR_EQ(e.get_enum_name(), "indigo") // Override
+    `ASSERT_STR_EQ(e.name(), "indigo") // Override
     `ASSERT_STR_EQ(e.get_full_name(), "color.indigo") // Override
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -120,7 +113,7 @@ import sv_enum_obj_pkg::*;
     e = c;
     `ASSERT_EQ(e.get_int_value(), 3)
     `ASSERT_EQ(c.get_value(), 3)
-    `ASSERT_STR_EQ(e.get_enum_name(), "indigo") // Override
+    `ASSERT_STR_EQ(e.name(), "indigo") // Override
     `ASSERT_STR_EQ(e.get_full_name(), "color.indigo") // Override
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
@@ -158,22 +151,22 @@ import sv_enum_obj_pkg::*;
     `ASSERT_FALSE(c.is_singleton())
 
     c.set(green::get());
-    `ASSERT_STR_EQ(c.get_enum_name(), "green")
+    `ASSERT_STR_EQ(c.name(), "green")
     c.set_by_value(3);
-    `ASSERT_STR_EQ(c.get_enum_name(), "indigo")
+    `ASSERT_STR_EQ(c.name(), "indigo")
     c.set_by_name("blue");
-    `ASSERT_STR_EQ(c.get_enum_name(), "blue")
+    `ASSERT_STR_EQ(c.name(), "blue")
     `ASSERT_EQ(c.get_value(), 2)
     `ASSERT_EQ(c.value, 2)
     c.set(purple::get());
-    `ASSERT_STR_EQ(c.get_enum_name(), "indigo")
+    `ASSERT_STR_EQ(c.name(), "indigo")
     `ASSERT_EQ(c.get_value(), 3)
     `ASSERT_EQ(c.value, 3)
 
     // Bypassing the setter (not recommended)
     // (randomization sets 'value', but runs pre/post_randomize())
     c.value = 1;
-    `ASSERT_STR_EQ(c.get_enum_name(), "green")
+    `ASSERT_STR_EQ(c.name(), "green")
     `ASSERT_TRUE(c.is(green::get()))
 `END_SV_TEST
 
@@ -271,12 +264,12 @@ endclass
         int c;
         `ASSERT_TRUE(my_op.randomize())
         c = my_op.calc(a, b);
-        case (my_op.get_enum_name())
+        case (my_op.name())
             "add": `ASSERT_EQ(c, (a + b))
             "sub": `ASSERT_EQ(c, (a - b))
-            default: `ASSERT_TRUE_LOG(0, {"unexpected op: ", my_op.get_enum_name()})
+            default: `ASSERT_TRUE_LOG(0, {"unexpected op: ", my_op.name()})
         endcase
-        $display("%0s.calc(%0d, %0d) = %0d", my_op.get_enum_name(), a, b, c);
+        $display("%0s.calc(%0d, %0d) = %0d", my_op.name(), a, b, c);
     end
 `END_SV_TEST
 
@@ -316,20 +309,20 @@ endclass
 
 `SV_TEST(test_sv_enum_next)
     animal pet = new();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "fox")
+    `ASSERT_STR_EQ(pet.name(), "fox")
     pet = pet.get_next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "cat")
+    `ASSERT_STR_EQ(pet.name(), "cat")
     pet = pet.get_next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "horse")
+    `ASSERT_STR_EQ(pet.name(), "horse")
     pet = pet.get_next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "fox") // Wrap
+    `ASSERT_STR_EQ(pet.name(), "fox") // Wrap
 
     pet = fox::next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "cat")
+    `ASSERT_STR_EQ(pet.name(), "cat")
     pet = cat::next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "horse")
+    `ASSERT_STR_EQ(pet.name(), "horse")
     pet = horse::next();
-    `ASSERT_STR_EQ(pet.get_enum_name(), "fox") // Wrap
+    `ASSERT_STR_EQ(pet.name(), "fox") // Wrap
 `END_SV_TEST
 
 `SV_TEST(test_sv_enum_associative_array_index)
@@ -337,7 +330,7 @@ endclass
     aa[fox::get()] = 123;
     `ASSERT_TRUE(aa.exists(fox::get()));
     foreach (aa[i]) begin
-        `ASSERT_STR_EQ(i.get_enum_name(), "fox")
+        `ASSERT_STR_EQ(i.name(), "fox")
         `ASSERT_EQ(aa[i], 123)
     end
 `END_SV_TEST
@@ -430,7 +423,7 @@ package original_pkg;
         legs = a.get_num_legs();
         ride = a.can_ride() ? "may" : "may not";
         return $sformatf("The %0s has %0d legs and you %0s ride it.",
-            a.get_enum_name(), legs, ride);
+            a.name(), legs, ride);
     endfunction
 endpackage
 
@@ -577,12 +570,12 @@ endpackage
     `ASSERT_AP_EQ_STR(s2, "'{\"add\", \"sub\", \"shift_left\"}")
 
     opc1.set(first_pkg::sub::get());
-    `ASSERT_STR_EQ(opc1.get_enum_name(), "sub")
+    `ASSERT_STR_EQ(opc1.name(), "sub")
     `ASSERT_EQ(opc1.calc(2, 3), -1)
 
     // Same name for "sub", but it's really a different one in a different package
     opc2.set_by_name("sub");
-    `ASSERT_STR_EQ(opc2.get_enum_name(), "sub")
+    `ASSERT_STR_EQ(opc2.name(), "sub")
     `ASSERT_EQ(opc2.calc(2, 3), 1) // Original overridden with absolute value
 `END_SV_TEST
 
@@ -630,15 +623,15 @@ endpackage
     `ASSERT_EQ(bad.num(), 3)
 
     good.set_by_name("sub");
-    `ASSERT_STR_EQ(good.get_enum_name(), "sub")
+    `ASSERT_STR_EQ(good.name(), "sub")
     `ASSERT_EQ(good.calc(2, 3), -1)
 
     bad.set_by_name("sub");
-    `ASSERT_STR_EQ(bad.get_enum_name(), "bad_sub")
+    `ASSERT_STR_EQ(bad.name(), "bad_sub")
     `ASSERT_EQ(bad.calc(2, 3), 5)
 
     bad.set_by_name("third_op");
-    `ASSERT_STR_EQ(bad.get_enum_name(), "third_op")
+    `ASSERT_STR_EQ(bad.name(), "third_op")
     `ASSERT_EQ(bad.calc(2, 3), 0)
 
     `ASSERT_AP_EQ_STR(bad.get_values(), "'{0, 1, 2}")
@@ -649,17 +642,17 @@ endpackage
     `ASSERT_TRUE(bad.randomize() with {value == 2;})
 
     bad.set(one_single_pkg::add::get());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "bad_add")
+    `ASSERT_STR_EQ(bad.name(), "bad_add")
     bad.set(bad.get_next());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "bad_sub")
+    `ASSERT_STR_EQ(bad.name(), "bad_sub")
     bad.set(bad.get_next());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "third_op")
+    `ASSERT_STR_EQ(bad.name(), "third_op")
     bad.set(bad.get_prev());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "bad_sub")
+    `ASSERT_STR_EQ(bad.name(), "bad_sub")
     bad.set(bad.get_first());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "bad_add")
+    `ASSERT_STR_EQ(bad.name(), "bad_add")
     bad.set(bad.get_last());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "third_op")
+    `ASSERT_STR_EQ(bad.name(), "third_op")
 
     // Wrap cases
     `ASSERT_EQ(one_single_pkg::third_op::next(), one_single_pkg::bad_add::get())
@@ -675,7 +668,7 @@ endpackage
     `ASSERT_EQ(good.get_next(), one_single_pkg::add::get())
     bad.set_by_name("sub");
     bad.set(bad.get_next());
-    `ASSERT_STR_EQ(bad.get_enum_name(), "third_op")
+    `ASSERT_STR_EQ(bad.name(), "third_op")
 `END_SV_TEST
 
 
@@ -694,20 +687,20 @@ endpackage
     ext_four_value_enum ee = new();
 
     e.set(four_value_enum::last());
-    `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_zx")
+    `ASSERT_STR_EQ(e.name(), "enum_value_zx")
     e.set(four_value_enum::first());
-    `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_0x")
+    `ASSERT_STR_EQ(e.name(), "enum_value_0x")
     repeat (3) begin
-        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_0x")
+        `ASSERT_STR_EQ(e.name(), "enum_value_0x")
         `ASSERT_EQ(e.get_value(), 3'b00x)
         e.set(e.get_next());
-        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_1x")
+        `ASSERT_STR_EQ(e.name(), "enum_value_1x")
         `ASSERT_EQ(e.get_value(), 3'b01x)
         e.set(e.get_next());
-        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_xx")
+        `ASSERT_STR_EQ(e.name(), "enum_value_xx")
         `ASSERT_EQ(e.get_value(), 3'b0xx)
         e.set(e.get_next());
-        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_zx")
+        `ASSERT_STR_EQ(e.name(), "enum_value_zx")
         `ASSERT_EQ(e.get_value(), 3'b0zx)
         e.set(e.get_next());
     end
@@ -735,15 +728,14 @@ endpackage
     `ASSERT_EQ(enum_value_xx::value(), 3'b0xx)
     `ASSERT_EQ(enum_value_zx::value(), 3'b0zx)
 
-    `ASSERT_STR_EQ(enum_value_0x::name(), "enum_value_0x")
-    `ASSERT_STR_EQ(enum_value_1x::name(), "enum_value_1x")
-    `ASSERT_STR_EQ(enum_value_xx::name(), "enum_value_xx")
-    `ASSERT_STR_EQ(enum_value_zx::name(), "enum_value_zx")
+    `ASSERT_STR_EQ(enum_value_0x::full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_STR_EQ(enum_value_1x::full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_STR_EQ(enum_value_xx::full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_STR_EQ(enum_value_zx::full_name(), "four_value_enum.enum_value_zx")
 
     ee.set(enum_value_zzz::get());
-    `ASSERT_STR_EQ(ee.get_enum_name(), "enum_value_zzz")
+    `ASSERT_STR_EQ(ee.name(), "enum_value_zzz")
     `ASSERT_EQ(ee.get_value(), 3'bzzz)
-    `ASSERT_STR_EQ(enum_value_zzz::name(), "enum_value_zzz")
     `ASSERT_EQ(enum_value_zzz::value(), 3'bzzz)
 
 `END_SV_TEST

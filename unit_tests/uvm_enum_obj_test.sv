@@ -62,14 +62,14 @@ import sv_enum_obj_pkg::*;
     oc2 = opcode::type_id::create("oc2", this);
     `ASSERT_STR_EQ(oc.get_type_name(), "bad_opcode");
     oc.set_by_name("add");
-    `ASSERT_STR_EQ(oc.get_enum_name(), "bad_add")
+    `ASSERT_STR_EQ(oc.name(), "bad_add")
     `ASSERT_EQ(oc.calc(2, 3), -1)
     oc2.set_by_name("sub");
     `ASSERT_FALSE(oc.compare(oc2))
     oc.set_by_name("bad_sub");
     `ASSERT_TRUE(oc.compare(oc2))
     `ASSERT_TRUE($cast(oc2, oc.clone()))
-    `ASSERT_STR_EQ(oc2.get_enum_name(), "bad_sub")
+    `ASSERT_STR_EQ(oc2.name(), "bad_sub")
     `ASSERT_EQ(oc.calc(2, 3), 5)
     `ASSERT_STR_EQ(oc.get_type_name(), "bad_opcode");
     `ASSERT_TRUE(oc.compare(oc2))
@@ -79,7 +79,7 @@ import sv_enum_obj_pkg::*;
 `RUN_PHASE_TEST(test_uvm_compare_methods_of_singletons)
     opcode a = sub::get();
     opcode b = add::get();
-    `ASSERT_FALSE_LOG(a.compare(b), {a.get_enum_name(), " same as ", b.get_enum_name()})
+    `ASSERT_FALSE_LOG(a.compare(b), {a.name(), " same as ", b.name()})
     b = sub::get();
-    `ASSERT_TRUE_LOG(b.compare(a), {b.get_enum_name(), " different from ", a.get_enum_name()})
+    `ASSERT_TRUE_LOG(b.compare(a), {b.name(), " different from ", a.name()})
 `END_RUN_PHASE_TEST

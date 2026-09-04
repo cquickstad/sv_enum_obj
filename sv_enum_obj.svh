@@ -39,7 +39,7 @@
 // Use holders when you need to randomize, assign, or change the current value.
 // Use singletons (`red::get()`, `color::get_by_value(0)`, ...) as immutable
 // identities for comparison, factory lookups, and static queries
-// (`red::value()`, `red::name()`, ...).
+// (`red::value()`, `red::full_name()`, ...).
 //
 //   if (c.is_holder())     c.set(green::get());   // OK
 //   if (c.is_singleton())  /* set_* and randomize() fatal */
@@ -77,7 +77,7 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     // Canonical singleton for the current numeric value (holders resolve first).
     // Follows overrides to the final enumerator.
     pure virtual function sv_enum_obj_base get_singleton();
-    pure virtual function string get_enum_name();
+    pure virtual function string name();
     pure virtual function _string_q get_names();
     pure virtual function string get_enum_type_name();
     pure virtual function void set_by_name(string n);
