@@ -30,15 +30,31 @@
         protected static enum_obj_t _registry_value[SCALAR_T]; \
         protected static enum_obj_t _registry_name[string]; \
         \
+        protected static function enum_obj_t _lookup_by_value(SCALAR_T v); \
+            _lookup_by_value = null; \
+            if ($isunknown(v)) begin \
+                foreach (_registry_name[n]) begin \
+                    enum_obj_t e = _registry_name[n]; \
+                    if (e.get_value === v) begin \
+                        _lookup_by_value = e; \
+                        break; \
+                    end \
+                end \
+            end else begin \
+                if (_registry_value.exists(v)) begin \
+                    _lookup_by_value = _registry_value[v]; \
+                end \
+            end \
+        endfunction \
+        \
         static function enum_obj_t get_by_value(SCALAR_T v); \
-            if (!_registry_value.exists(v)) begin \
+            get_by_value = _lookup_by_value(v); \
+            if (get_by_value == null) begin \
                 `ifdef INCA $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                     $sformatf("%0s has no enumeration for value 'h%0x",\
                         _base_name, v)}); \
-                return null; \
             end \
-            return _registry_value[v]; \
         endfunction \
         \
         static function enum_obj_t get_by_name(string n); \
@@ -70,7 +86,7 @@
                     "enumerator."}); \
                 return null; \
             end \
-            return _registry_value[_values[0]]; \
+            return get_by_value(_values[0]); \
         endfunction \
         static function enum_obj_t last(); \
             if (_values.size() == 0) begin \
@@ -81,11 +97,11 @@
                     "enumerator."}); \
                 return null; \
             end \
-            return _registry_value[_values[_values.size()-1]]; \
+            return get_by_value(_values[_values.size()-1]); \
         endfunction \
         static function SCALAR_T max_value(); \
             SCALAR_T q[$] = _values.max(); \
-            if (q.size() > 0) return q[0]; \
+            if ((q.size() > 0) && !$isunknown(q[0])) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".max_value: ", \
                 $sformatf("Failed to find max value for '%0s' among values %p", \
@@ -93,24 +109,27 @@
         endfunction \
         static function SCALAR_T min_value(); \
             SCALAR_T q[$] = _values.min(); \
-            if (q.size() > 0) return q[0]; \
+            if ((q.size() > 0) && !$isunknown(q[0])) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".min_value: ", \
                 $sformatf("Failed to find min value for '%0s' among values %p", \
                     _base_name, _values)}); \
         endfunction \
         static function SCALAR_T next_unused_value(); \
+            enum_obj_t e; \
             SCALAR_T candidate, max; \
             if (_values.size() == 0) return '0; \
             candidate = min_value(); \
             max = max_value(); \
             forever begin \
-                if (!(candidate inside {_values})) return candidate; \
-                if (candidate == max) break; \
+                e = _lookup_by_value(candidate); \
+                if (e == null) return candidate; \
+                if (candidate === max) break; \
                 candidate++; \
             end \
             candidate = max + SCALAR_T'(1); \
-            if (!(candidate inside {_values})) return candidate; \
+            e = _lookup_by_value(candidate); \
+            if (e == null) return candidate; \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, \
                 ".next_unused_value: There are no more available ", \
                 "values in the type space."}); \
@@ -189,6 +208,9 @@
             end \
         endfunction \
         \
+        // NOTE: randomization cannot work with X/Z, so do not call \
+        // .randomize() if you have declared some enumerators with unknown \
+        // values. \
         constraint value_must_exist_c {value inside {_values};} \
         function void post_randomize(); _init_obj(); endfunction \
         \
@@ -238,23 +260,20 @@
         protected static string _name = `"ENUM`"; \
         protected static string _full_name = {_base_name, ".", _name}; \
         protected static SCALAR_T _value = ENUM_VALUE; \
-        // protected static enum_obj_t _override = null; \
         protected static enum_obj_t _singleton; // Set by registration \
         static function enum_obj_t get(); \
-            if (_registry_value.exists(_value)) begin \
-                return _registry_value[_value]; \
-            end \
-            $fatal(1, {"SV ENUM OBJECT FATAL: ", _name, "::get() was called ", \
-                "but '", _full_name, "' was not registered with '", \
-                _base_name, "'"}); \
+            // Can't simply return singleton, because this value may have an \
+            // override. \
+            return get_by_value(_value); \
         endfunction \
         \
         static bit _side_effect = _register(); \
         static function bit _register(); \
+            enum_obj_t e; \
             ENUM new_me = new(); \
             _singleton = new_me; \
             if (_name inside {_names}) begin \
-                if (_value == _registry_name[_name].get_value()) begin \
+                if (_value === _registry_name[_name].get_value()) begin \
                     $display({"SV ENUM OBJECT CAUTION: An enumerator's ", \
                         "name (", _base_name, ".", _name, ", handle=", \
                         $sformatf("%0x", _singleton), ") matched another ", \
@@ -282,8 +301,9 @@
                         "two classes of the same name in the same package."}); \
                 end \
             end \
-            if (_value inside {_values}) begin \
-                enum_obj_t prev_enum = _registry_value[_value]; \
+            e = _lookup_by_value(_value); \
+            if (e != null) begin \
+                enum_obj_t prev_enum = e; \
                 string prev_name = prev_enum.get_enum_name(); \
                 // Replace the name, keeping the order the same: \
                 int qi[$] = _names.find_first_index() with (item == prev_name); \
@@ -302,7 +322,7 @@
                 _values.push_back(_value); \
                 _names.push_back(_name); \
             end \
-            _registry_value[_value] = _singleton; \
+            if (!$isunknown(_value)) _registry_value[_value] = _singleton; \
             _registry_name[_name] = _singleton; \
             return 1; \
         endfunction \
@@ -311,22 +331,24 @@
             return _value; \
         endfunction \
         static function string name(); \
-            return _registry_value[_value].get_enum_name(); \
+            enum_obj_t e = get_by_value(_value); \
+            return e.get_enum_name(); \
         endfunction \
         static function string full_name(); \
-            return _registry_value[_value].get_full_name(); \
+            enum_obj_t e = get_by_value(_value); \
+            return e.get_full_name(); \
         endfunction \
         static function enum_obj_t next(); \
-            int qi[$] = _values.find_first_index() with (item == _value); \
+            int qi[$] = _values.find_first_index() with (item === _value); \
             int i = qi[0] + 1; \
             if (i >= _values.size()) i = 0; \
-            return _registry_value[_values[i]]; \
+            return get_by_value(_values[i]); \
         endfunction \
         static function enum_obj_t prev(); \
-            int qi[$] = _values.find_first_index() with (item == _value); \
+            int qi[$] = _values.find_first_index() with (item === _value); \
             int i = qi[0] - 1; \
             if (i < 0) i = _values.size() - 1; \
-            return _registry_value[_values[i]]; \
+            return get_by_value(_values[i]); \
         endfunction \
         \
         function new(); \
@@ -383,10 +405,10 @@
         protected virtual function void _init_obj(); _obj = null; endfunction \
         \
         virtual function sv_enum_obj_base get_singleton(); \
-            return _registry_value[_value]; \
+            return get_by_value(_value); \
         endfunction \
         virtual function enum_obj_t get_``ENUM_OBJ_TYPE``_singleton(); \
-            return _registry_value[_value]; \
+            return get_by_value(_value); \
         endfunction \
         virtual function string get_enum_name(); \
             return _name; \
@@ -462,11 +484,13 @@
             SCALAR_T vs[$] = parent_enum_obj_t::values(); \
             string   ns[$] = parent_enum_obj_t::names(); \
             foreach (vs[i]) begin \
-                enum_obj_t h = parent_enum_obj_t::get_by_value(vs[i]); \
-                _values.push_back(vs[i]); \
-                _names.push_back(ns[i]); \
-                _registry_value[vs[i]] = h; \
-                _registry_name[ns[i]]  = h; \
+                SCALAR_T v = vs[i]; \
+                string n = ns[i]; \
+                enum_obj_t h = parent_enum_obj_t::get_by_value(v); \
+                _values.push_back(v); \
+                _names.push_back(n); \
+                if (!$isunknown(v)) _registry_value[v] = h; \
+                _registry_name[n] = h; \
             end \
             return 1; \
         endfunction \
@@ -503,6 +527,9 @@
         virtual function void set_by_name(string n); \
             set_by_value(get_by_name(n).get_value()); \
         endfunction \
+        // NOTE: randomization cannot work with X/Z, so do not call \
+        // .randomize() if you have declared some enumerators with unknown \
+        // values. \
         constraint value_must_exist_c {value inside {_values};}
 
 `define DECL_SV_ENUM_OBJ_EXTEND_END \

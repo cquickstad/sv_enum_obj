@@ -677,3 +677,73 @@ endpackage
     bad.set(bad.get_next());
     `ASSERT_STR_EQ(bad.get_enum_name(), "third_op")
 `END_SV_TEST
+
+
+
+`DECL_SV_ENUM_OBJ(four_value_enum, reg[3:0])
+`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_0x, 3'b00x)
+`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_1x, 3'b01x)
+`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_xx, 3'b0xx)
+`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_zx, 3'b0zx)
+
+`DECL_SV_ENUM_OBJ_EXTEND(ext_four_value_enum, four_value_enum)
+`DECL_SV_ENUM_OBJ_INST(ext_four_value_enum, enum_value_zzz, 3'bzzz)
+
+`SV_TEST(test_sv_enum_four_value)
+    four_value_enum e = new();
+    ext_four_value_enum ee = new();
+
+    e.set(four_value_enum::last());
+    `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_zx")
+    e.set(four_value_enum::first());
+    `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_0x")
+    repeat (3) begin
+        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_0x")
+        `ASSERT_EQ(e.get_value(), 3'b00x)
+        e.set(e.get_next());
+        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_1x")
+        `ASSERT_EQ(e.get_value(), 3'b01x)
+        e.set(e.get_next());
+        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_xx")
+        `ASSERT_EQ(e.get_value(), 3'b0xx)
+        e.set(e.get_next());
+        `ASSERT_STR_EQ(e.get_enum_name(), "enum_value_zx")
+        `ASSERT_EQ(e.get_value(), 3'b0zx)
+        e.set(e.get_next());
+    end
+
+    `ASSERT_EQ(enum_value_zx::next(), enum_value_0x::get())
+    `ASSERT_EQ(enum_value_0x::prev(), enum_value_zx::get())
+
+    e = enum_value_0x::get(); `ASSERT_EQ(e.get_value(), 3'b00x)
+    e = enum_value_1x::get(); `ASSERT_EQ(e.get_value(), 3'b01x)
+    e = enum_value_xx::get(); `ASSERT_EQ(e.get_value(), 3'b0xx)
+    e = enum_value_zx::get(); `ASSERT_EQ(e.get_value(), 3'b0zx)
+
+    e = new();
+    e.set(enum_value_zx::get());
+    `ASSERT_EQ(e.get_singleton(), enum_value_zx::get())
+    `ASSERT_EQ(e.get_four_value_enum_singleton(), enum_value_zx::get())
+
+    // Cannot call when unknown values are present
+    // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
+    // `ASSERT_EQ(four_value_enum::min_value(), 3'b000)
+    // `ASSERT_EQ(four_value_enum::next_unused_value(), 3'b100)
+
+    `ASSERT_EQ(enum_value_0x::value(), 3'b00x)
+    `ASSERT_EQ(enum_value_1x::value(), 3'b01x)
+    `ASSERT_EQ(enum_value_xx::value(), 3'b0xx)
+    `ASSERT_EQ(enum_value_zx::value(), 3'b0zx)
+
+    `ASSERT_STR_EQ(enum_value_0x::name(), "enum_value_0x")
+    `ASSERT_STR_EQ(enum_value_1x::name(), "enum_value_1x")
+    `ASSERT_STR_EQ(enum_value_xx::name(), "enum_value_xx")
+    `ASSERT_STR_EQ(enum_value_zx::name(), "enum_value_zx")
+
+    ee.set(enum_value_zzz::get());
+    `ASSERT_STR_EQ(ee.get_enum_name(), "enum_value_zzz")
+    `ASSERT_EQ(ee.get_value(), 3'bzzz)
+    `ASSERT_STR_EQ(enum_value_zzz::name(), "enum_value_zzz")
+    `ASSERT_EQ(enum_value_zzz::value(), 3'bzzz)
+
+`END_SV_TEST
