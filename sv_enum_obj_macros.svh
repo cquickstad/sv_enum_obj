@@ -503,10 +503,6 @@
         virtual function void set_by_name(string n); \
             set_by_value(get_by_name(n).get_value()); \
         endfunction \
-        // virtual function enum_obj_t get_next(); return next(); endfunction \
-        // virtual function enum_obj_t get_prev(); return prev(); endfunction \
-        // virtual function enum_obj_t get_first(); return first(); endfunction \
-        // virtual function enum_obj_t get_last(); return last(); endfunction \
         constraint value_must_exist_c {value inside {_values};}
 
 `define DECL_SV_ENUM_OBJ_EXTEND_END \
