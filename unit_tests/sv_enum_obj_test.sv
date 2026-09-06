@@ -872,3 +872,21 @@ endpackage
     `ASSERT_STR_EQ(f.name(), "foo_a_override")
 `END_SV_TEST
 
+
+`DECL_SV_ENUM_OBJ(four_val_multiple_override_enum, logic)
+`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X, 1'bX)
+`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X2, 1'bX)
+`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X3, 1'bX)
+`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X4, 1'bX)
+
+`SV_TEST(test_sv_enum_four_val_multiple_override)
+    four_val_multiple_override_enum x = new();
+    x.set_by_value(1'bX);
+    `ASSERT_STR_EQ(x.name(), "four_val_multiple_override_X4")
+    `ASSERT_EQ(x.get_singleton(), four_val_multiple_override_X4::get())
+    `ASSERT_EQ(four_val_multiple_override_X::get(), four_val_multiple_override_X4::get())
+    `ASSERT_EQ(four_val_multiple_override_X2::get(), four_val_multiple_override_X4::get())
+    `ASSERT_EQ(four_val_multiple_override_X3::get(), four_val_multiple_override_X4::get())
+    x = four_val_multiple_override_enum::get_by_value(1'bX);
+    `ASSERT_EQ(x, four_val_multiple_override_X4::get())
+`END_SV_TEST
