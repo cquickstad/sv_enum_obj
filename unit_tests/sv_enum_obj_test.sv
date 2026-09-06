@@ -66,9 +66,7 @@ import sv_enum_obj_pkg::*;
     `ASSERT_FALSE(e.is_holder())
     `ASSERT_TRUE(e.is_singleton())
     `ASSERT_TRUE($cast(c, e.get_singleton()))
-    `ASSERT_EQ(e.get_singleton(), c.get_color_singleton())
     e = c.get_singleton();
-    c = c.get_color_singleton();
     `ASSERT_STR_EQ(e.name(), "red")
     `ASSERT_STR_EQ(c.name(), "red")
 
@@ -310,18 +308,29 @@ endclass
 `SV_TEST(test_sv_enum_next)
     animal pet = new();
     `ASSERT_STR_EQ(pet.name(), "fox")
-    pet = pet.get_next();
+    pet = pet.next(); // Warning! pet is now an immutable singleton! (Prefer pet.increment() instead)
     `ASSERT_STR_EQ(pet.name(), "cat")
-    pet = pet.get_next();
+    pet = pet.next(); // Warning! pet is now an immutable singleton! (Prefer pet.increment() instead)
     `ASSERT_STR_EQ(pet.name(), "horse")
-    pet = pet.get_next();
+    pet = pet.next(); // Warning! pet is now an immutable singleton! (Prefer pet.increment() instead)
     `ASSERT_STR_EQ(pet.name(), "fox") // Wrap
 
-    pet = fox::next();
+    pet = new();
+    pet.set(fox::get());
+    pet.set(pet.next());
     `ASSERT_STR_EQ(pet.name(), "cat")
-    pet = cat::next();
+    pet.set(pet.next());
     `ASSERT_STR_EQ(pet.name(), "horse")
-    pet = horse::next();
+    pet.set(pet.next());
+    `ASSERT_STR_EQ(pet.name(), "fox") // Wrap
+
+    pet = new();
+    pet.set(fox::get());
+    pet.increment();
+    `ASSERT_STR_EQ(pet.name(), "cat")
+    pet.increment();
+    `ASSERT_STR_EQ(pet.name(), "horse")
+    pet.increment();
     `ASSERT_STR_EQ(pet.name(), "fox") // Wrap
 `END_SV_TEST
 
@@ -409,11 +418,11 @@ package original_pkg;
     // Implement some functionality in the original package that uses the enum.
     function automatic string explain_all_animals();
         animal a = new();
-        a.set(a.get_first());
+        a.set(a.first());
         explain_all_animals = "";
         repeat (animal::num()) begin
             explain_all_animals = {explain_all_animals, "\n", explain_animal(a)};
-            a.set(a.get_next());
+            a.increment();
         end
     endfunction
 
@@ -643,31 +652,43 @@ endpackage
 
     bad.set(one_single_pkg::add::get());
     `ASSERT_STR_EQ(bad.name(), "bad_add")
-    bad.set(bad.get_next());
+    bad.increment();
     `ASSERT_STR_EQ(bad.name(), "bad_sub")
-    bad.set(bad.get_next());
+    bad.increment();
     `ASSERT_STR_EQ(bad.name(), "third_op")
-    bad.set(bad.get_prev());
+    bad.decrement();
     `ASSERT_STR_EQ(bad.name(), "bad_sub")
-    bad.set(bad.get_first());
+    bad.set(bad.first());
     `ASSERT_STR_EQ(bad.name(), "bad_add")
-    bad.set(bad.get_last());
+    bad.set(bad.last());
     `ASSERT_STR_EQ(bad.name(), "third_op")
 
     // Wrap cases
-    `ASSERT_EQ(one_single_pkg::third_op::next(), one_single_pkg::bad_add::get())
-    `ASSERT_EQ(one_single_pkg::bad_add::prev(), one_single_pkg::third_op::get())
+    bad.set(one_single_pkg::third_op::get());
+    `ASSERT_EQ(bad.next(), one_single_pkg::bad_add::get())
+    good = one_single_pkg::sub::get();
+    `ASSERT_EQ(good.next(), one_single_pkg::add::get())
+
+    good = one_single_pkg::bad_add::get();
+    `ASSERT_EQ(good.prev(), one_single_pkg::third_op::get())
+    good = one_single_pkg::add::get();
+    `ASSERT_EQ(good.prev(), one_single_pkg::sub::get())
 
     // 1 -> 0 case
-    `ASSERT_EQ(one_single_pkg::sub::prev(), one_single_pkg::add::get())
+    good = one_single_pkg::sub::get();
+    `ASSERT_EQ(good.prev(), one_single_pkg::add::get())
+    good = one_single_pkg::bad_sub::get();
+    `ASSERT_EQ(good.prev(), one_single_pkg::bad_add::get())
 
     // size()-2 -> size()-1 case
-    `ASSERT_EQ(one_single_pkg::add::next(), one_single_pkg::sub::get())
+    good = one_single_pkg::bad_sub::get();
+    `ASSERT_EQ(good.next(), one_single_pkg::third_op::get())
 
+    good = new();
     good.set_by_name("sub");
-    `ASSERT_EQ(good.get_next(), one_single_pkg::add::get())
+    `ASSERT_EQ(good.next(), one_single_pkg::add::get())
     bad.set_by_name("sub");
-    bad.set(bad.get_next());
+    bad.set(bad.next());
     `ASSERT_STR_EQ(bad.name(), "third_op")
 `END_SV_TEST
 
@@ -686,27 +707,30 @@ endpackage
     four_value_enum e = new();
     ext_four_value_enum ee = new();
 
-    e.set(four_value_enum::last());
+    e.set(enum_value_xx::get());
+    e.set(e.last());
     `ASSERT_STR_EQ(e.name(), "enum_value_zx")
-    e.set(four_value_enum::first());
+    e.set(e.first());
     `ASSERT_STR_EQ(e.name(), "enum_value_0x")
     repeat (3) begin
         `ASSERT_STR_EQ(e.name(), "enum_value_0x")
         `ASSERT_EQ(e.get_value(), 3'b00x)
-        e.set(e.get_next());
+        e.set(e.next());
         `ASSERT_STR_EQ(e.name(), "enum_value_1x")
         `ASSERT_EQ(e.get_value(), 3'b01x)
-        e.set(e.get_next());
+        e.set(e.next());
         `ASSERT_STR_EQ(e.name(), "enum_value_xx")
         `ASSERT_EQ(e.get_value(), 3'b0xx)
-        e.set(e.get_next());
+        e.set(e.next());
         `ASSERT_STR_EQ(e.name(), "enum_value_zx")
         `ASSERT_EQ(e.get_value(), 3'b0zx)
-        e.set(e.get_next());
+        e.set(e.next());
     end
 
-    `ASSERT_EQ(enum_value_zx::next(), enum_value_0x::get())
-    `ASSERT_EQ(enum_value_0x::prev(), enum_value_zx::get())
+    e = enum_value_zx::get();
+    `ASSERT_EQ(e.next(), enum_value_0x::get())
+    e = enum_value_0x::get();
+    `ASSERT_EQ(e.prev(), enum_value_zx::get())
 
     e = enum_value_0x::get(); `ASSERT_EQ(e.get_value(), 3'b00x)
     e = enum_value_1x::get(); `ASSERT_EQ(e.get_value(), 3'b01x)
@@ -716,7 +740,6 @@ endpackage
     e = new();
     e.set(enum_value_zx::get());
     `ASSERT_EQ(e.get_singleton(), enum_value_zx::get())
-    `ASSERT_EQ(e.get_four_value_enum_singleton(), enum_value_zx::get())
 
     // Cannot call when unknown values are present
     // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
@@ -739,3 +762,95 @@ endpackage
     `ASSERT_EQ(enum_value_zzz::value(), 3'bzzz)
 
 `END_SV_TEST
+
+`SV_TEST(test_sv_enum_increment_decrement)
+    four_value_enum e = new();
+    ext_four_value_enum ee = new();
+
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_zx")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_TRUE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.increment();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_zx")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_TRUE(e.is_last())
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(e.is_first()) `ASSERT_FALSE(e.is_last())
+    e.decrement();
+    `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(e.is_first()) `ASSERT_FALSE(e.is_last())
+
+
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_zx")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "ext_four_value_enum.enum_value_zzz")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_TRUE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.increment();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "ext_four_value_enum.enum_value_zzz")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_TRUE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_zx")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_xx")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_1x")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "four_value_enum.enum_value_0x")
+    `ASSERT_TRUE(ee.is_first()) `ASSERT_FALSE(ee.is_last())
+    ee.decrement();
+    `ASSERT_STR_EQ(ee.get_full_name(), "ext_four_value_enum.enum_value_zzz")
+    `ASSERT_FALSE(ee.is_first()) `ASSERT_TRUE(ee.is_last())
+
+`END_SV_TEST
+
+
