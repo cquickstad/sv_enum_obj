@@ -156,8 +156,9 @@ Factory overrides are possible for any new base/wrapper object derived from `col
 ```
 // NOTE: Import/include order is important.
 // Use `DECL_SV_ENUM_OBJ_EXTEND(my_extended_color, color) *after* all
-// `DECL_SV_ENUM_OBJ_INST(color, ???) declarations, or they will not be picked
-// up by my_extended_color.
+// `DECL_SV_ENUM_OBJ_INST(color, ???) declarations.  Trying declare another
+// member of color after extending it will result in a $fatal in order to
+// protect against the extended type missing members of the parent.
 `DECL_SV_ENUM_OBJ_EXTEND(my_extended_color, color)
 `DECL_SV_ENUM_OBJ_INST(my_extended_color, magenta)
 `DECL_SV_ENUM_OBJ_INST(my_extended_color, turquoise)
