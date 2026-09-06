@@ -17,6 +17,7 @@
         "isunknown",
         "libext",
         "libuvmdpi",
+        "linedebug",
         "newperf",
         "ngit",
         "NODNTW",
