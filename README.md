@@ -361,23 +361,57 @@ assert(a.get_value() inside {[red::value(), blue::value()]});
 ### Built-In Enum Methods
 Instead of
 ```
-color c = green;
-c = c.next();
-$display("%0s is after green", c.name());
+color c;
+$display("%0d colors:", c.num());
+c = c.first();
+forever begin
+    $display("%0s : %0d", c.name(), c);
+    if (c === c.last()) break;
+    c = c.next();
+end
+$display("Now backwards:");
+c = c.last();
+forever begin
+    $display("%0s : %0d", c.name(), c);
+    if (c === c.first()) break;
+    c = c.prev();
+end
 ```
 write
 ```
 color c = new();
-c.set(green::get());
-c.set(c.next());
-$display("%0s is after green", c.name());
+$display("%0d colors:", c.num());
+c.set(c.first());
+forever begin
+    $display("%0s : %0d", c.name(), c.get_value());
+    if (c.is(c.last())) break;
+    c.set(c.next());
+end
+$display("Now backwards:");
+c.set(c.last());
+forever begin
+    $display("%0s : %0d", c.name(), c);
+    if (c.is(c.first())) break;
+    c.set(c.prev());
+end
 ```
 or
 ```
 color c = new();
-c.set(green::get());
-c.increment();
-$display("%0s is after green", c.name());
+$display("%0d colors:", c.num());
+c.set(c.first());
+forever begin
+    $display("%0s : %0d", c.name(), c.get_value());
+    if (c.is_last()) break;
+    c.increment();
+end
+$display("Now backwards:");
+c.set(c.last());
+forever begin
+    $display("%0s : %0d", c.name(), c);
+    if (c.is_first()) break;
+    c.decrement();
+end
 ```
 _Note that iteration order for `prev`/`next` and `increment`/`decrement` is declaration order (same as native SV), not `value` order._
 ---
