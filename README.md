@@ -173,6 +173,25 @@ c.set_by_name("red"); // Good: "red" inherited from parent, color.
 color c = new();
 c.set_by_name("turquoise"); // BAD!!! $fatal() because turquoise belongs to my_extended_color
 ```
+---
+### 4-State Values With Unknowns
+Instead of
+```
+typedef enum logic {
+    ZERO = 1'b0,
+    ONE  = 1'b1,
+    EXX  = 1'bX,
+    ZEE  = 1'bZ
+} four_val;
+```
+write
+```
+`DECL_SV_ENUM_OBJ(four_val, logic)
+`DECL_SV_ENUM_OBJ_INST(four_val, ZERO, 1'b0)
+`DECL_SV_ENUM_OBJ_INST(four_val, ONE, 1'b1)
+`DECL_SV_ENUM_OBJ_INST(four_val, EXX, 1'bX)
+`DECL_SV_ENUM_OBJ_INST(four_val, ZEE, 1'bZ)
+```
 
 ---
 ### Randomization

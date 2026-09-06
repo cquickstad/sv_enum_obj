@@ -893,15 +893,19 @@ endpackage
 
 
 `DECL_SV_ENUM_OBJ(four_val_rand_enum, logic)
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZERO, 1'b0)
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ONE, 1'b1)
 `DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_EXX, 1'bX)
 `DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZEE, 1'bZ)
+// Now let ONE and ZERO take values from next_unused_value(), which will also
+// test min_value() and max_value() while 4-state unknown values are in play.
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZERO)
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ONE)
 
 
 `SV_TEST(test_sv_enum_four_val_rand)
     four_val_rand_enum x = new();
     int count[logic];
+    `ASSERT_EQ(four_val_rand_enum_ZERO::value(), 1'b0)
+    `ASSERT_EQ(four_val_rand_enum_ONE::value(), 1'b1)
     repeat (100) begin
         `ASSERT_TRUE(x.randomize())
         `ASSERT_TRUE(x.get_value() inside {1'b0, 1'b1})

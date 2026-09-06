@@ -81,16 +81,16 @@
             return _names; \
         endfunction \
         static function SCALAR_T max_value(); \
-            SCALAR_T q[$] = _values.max(); \
-            if ((q.size() > 0) && !$isunknown(q[0])) return q[0]; \
+            SCALAR_T q[$] = _two_value_values.max(); \
+            if (q.size() > 0) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".max_value: ", \
                 $sformatf("Failed to find max value for '%0s' among values %p", \
                     _base_name, _values)}); \
         endfunction \
         static function SCALAR_T min_value(); \
-            SCALAR_T q[$] = _values.min(); \
-            if ((q.size() > 0) && !$isunknown(q[0])) return q[0]; \
+            SCALAR_T q[$] = _two_value_values.min(); \
+            if (q.size() > 0) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".min_value: ", \
                 $sformatf("Failed to find min value for '%0s' among values %p", \
@@ -99,7 +99,7 @@
         static function SCALAR_T next_unused_value(); \
             enum_obj_t e; \
             SCALAR_T candidate, max; \
-            if (_values.size() == 0) return '0; \
+            if (_two_value_values.size() == 0) return '0; \
             candidate = min_value(); \
             max = max_value(); \
             forever begin \
