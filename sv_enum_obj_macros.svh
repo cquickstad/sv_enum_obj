@@ -265,7 +265,7 @@
 // Registration order is declaration order (static initializers).
 //
 // Override: a later INST with an already-used encoding (value) replaces the
-//  label in`names()`, redirects `::get()` / `get_by_value()` to the new
+// label in `names()`, redirects `::get()` / `get_by_value()` to the new
 // singleton, and chains `name()` / `full_name()` of the earlier INST to the
 // final name.
 //
