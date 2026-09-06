@@ -213,7 +213,7 @@ endclass
 ```
 _(Remember that if a class handle members are declared as `rand`, and are not `null` when `.randomize()` is called on the class, SystemVerilog will follow the handles and also call `.randomize()` on those classes.  In other words, calling `item.randomize()` in the above example, will also cause `item.c.randomize()` to be called.  The order of operations: `item.pre_randomize()` is called; `c.pre_randomize()` is called; `item` is randomized; `c` is randomized; `item.post_randomize()` is called; `c.post_randomize()` is called.)_
 
-_(Remember that SystemVerilog randomization cannot select unknown values.  If you register an enumeration with unknown values, randomization will not succeed.)_
+_(Remember that SystemVerilog randomization cannot select unknown values.  If you register an enumeration with unknown values, randomization will be attempted, but none of the values containing unknown (X or Z) can be chosen.  This behavior follows SV's native enums, when they are defined with unknown value encodings.)_
 ---
 ### Accessing the Scalar Representation
 Instead of

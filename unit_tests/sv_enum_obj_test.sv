@@ -890,3 +890,24 @@ endpackage
     x = four_val_multiple_override_enum::get_by_value(1'bX);
     `ASSERT_EQ(x, four_val_multiple_override_X4::get())
 `END_SV_TEST
+
+
+`DECL_SV_ENUM_OBJ(four_val_rand_enum, logic)
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZERO, 1'b0)
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ONE, 1'b1)
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_EXX, 1'bX)
+`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZEE, 1'bZ)
+
+
+`SV_TEST(test_sv_enum_four_val_rand)
+    four_val_rand_enum x = new();
+    int count[logic];
+    repeat (100) begin
+        `ASSERT_TRUE(x.randomize())
+        `ASSERT_TRUE(x.get_value() inside {1'b0, 1'b1})
+        if (!count.exists(x.get_value())) count[x.get_value()] = 1;
+        else count[x.get_value()] = count[x.get_value()] + 1;
+    end
+    `ASSERT_GT(count[1'b0], 0)
+    `ASSERT_GT(count[1'b1], 0)
+`END_SV_TEST

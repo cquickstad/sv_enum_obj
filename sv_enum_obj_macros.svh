@@ -25,6 +25,7 @@
 `define _SV_ENUM_OBJ_TYPE_STATICS \
         \
         protected static SCALAR_T _values[$]; \
+        protected static SCALAR_T _two_value_values[$]; \
         protected static string _names[$]; \
         \
         protected static enum_obj_t _registry_value[SCALAR_T]; \
@@ -167,10 +168,9 @@
             return get_value() === _values[_values.size() - 1]; \
         endfunction \
         \
-        // NOTE: randomization cannot work with X/Z, so do not call \
-        // .randomize() if you have declared some enumerators with unknown \
-        // values. \
-        constraint value_must_exist_c {value inside {_values};} \
+        // NOTE: randomization cannot work with X/Z. \
+        //       Just as with native enums, randomization should ignore unknowns. \
+        constraint value_must_exist_c {value inside {_two_value_values};} \
         protected virtual function void _init_obj(); \
             if ((_obj == null) || (_resolved_value !== value)) begin \
                 _obj = get_by_value(value); \
@@ -356,6 +356,7 @@
                         _base_name, _name, _singleton, _value); \
                 end \
                 _values.push_back(_value); \
+                if (!$isunknown(_value)) _two_value_values.push_back(_value); \
                 _names.push_back(_name); \
             end \
             if (!$isunknown(_value)) _registry_value[_value] = _singleton; \
@@ -486,6 +487,7 @@
         protected static int _num_names_imported_from_base = _import_from_base(); \
         protected static function bit _import_from_base(); \
             _values = parent_enum_obj_t::_values; \
+            _two_value_values = parent_enum_obj_t::_two_value_values; \
             _names = parent_enum_obj_t::_names; \
             _registry_value = parent_enum_obj_t::_registry_value; \
             _registry_name = parent_enum_obj_t::_registry_name; \
