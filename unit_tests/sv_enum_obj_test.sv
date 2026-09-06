@@ -744,10 +744,11 @@ endpackage
     e.set(enum_value_zx::get());
     `ASSERT_EQ(e.get_singleton(), enum_value_zx::get())
 
-    // Cannot call when unknown values are present
+    // When unknowns are in all of the values, max_value() and min_value() will
+    // $fatal because no max or min can be determined.
     // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
     // `ASSERT_EQ(four_value_enum::min_value(), 3'b000)
-    // `ASSERT_EQ(four_value_enum::next_unused_value(), 3'b100)
+    `ASSERT_EQ(four_value_enum::next_unused_value(), 3'b000)
 
     `ASSERT_EQ(enum_value_0x::value(), 3'b00x)
     `ASSERT_EQ(enum_value_1x::value(), 3'b01x)
