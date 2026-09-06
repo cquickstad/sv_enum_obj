@@ -79,28 +79,6 @@
         static function _string_q names(); \
             return _names; \
         endfunction \
-        static function enum_obj_t first(); \
-            if (_values.size() == 0) begin \
-                `ifdef INCA $stacktrace; `endif \
-                $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, " has no ", \
-                    "defined enumerations. Therefore first() has nothing to ", \
-                    "return. Please use DECL_SV_ENUM_OBJ_INST to declare an ", \
-                    "enumerator."}); \
-                return null; \
-            end \
-            return get_by_value(_values[0]); \
-        endfunction \
-        static function enum_obj_t last(); \
-            if (_values.size() == 0) begin \
-                `ifdef INCA $stacktrace; `endif \
-                $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, " has no ", \
-                    "defined enumerations. Therefore last() has nothing to ", \
-                    "return. Please use DECL_SV_ENUM_OBJ_INST to declare an ", \
-                    "enumerator."}); \
-                return null; \
-            end \
-            return get_by_value(_values[_values.size()-1]); \
-        endfunction \
         static function SCALAR_T max_value(); \
             SCALAR_T q[$] = _values.max(); \
             if ((q.size() > 0) && !$isunknown(q[0])) return q[0]; \
@@ -133,11 +111,83 @@
             e = _lookup_by_value(candidate); \
             if (e == null) return candidate; \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, \
-                ".next_unused_value: There are no more available ", \
+                ".get_next_unused_value: There are no more available ", \
                 "values in the type space."}); \
         endfunction \
         static function string enum_type_name(); \
             return _base_name; \
+        endfunction
+
+`define _SV_ENUM_OBJ_TYPE_VIRTUAL_METHODS_THAT_REFERENCE_STATICS \
+        virtual function void set_by_name(string n); \
+            set_by_value(get_by_name(n).get_value()); \
+        endfunction \
+        virtual function _string_q get_names(); return _names; endfunction \
+        virtual function _scalar_t_q get_values(); return _values; endfunction \
+        virtual function SCALAR_T get_max_value(); return max_value(); endfunction \
+        virtual function SCALAR_T get_min_value(); return min_value(); endfunction \
+        virtual function SCALAR_T get_next_unused_value(); return next_unused_value(); endfunction \
+        virtual function int get_num(); return _values.size(); endfunction \
+        virtual function enum_obj_t next(); \
+            SCALAR_T v = get_value(); \
+            int i, qi[$] = _values.find_first_index() with (item === v); \
+            if (qi.size() == 0) begin \
+                `ifdef INCA $stacktrace; `endif \
+                $fatal(1, $sformatf("Unexpected: value %p not in values: %p", v, _values)); \
+            end \
+            i = qi[0] + 1; \
+            if (i >= _values.size()) i = 0; \
+            return get_by_value(_values[i]); \
+        endfunction \
+        virtual function enum_obj_t prev(); \
+            SCALAR_T v = get_value(); \
+            int i, qi[$] = _values.find_first_index() with (item === v); \
+            if (qi.size() == 0) begin \
+                `ifdef INCA $stacktrace; `endif \
+                $fatal(1, $sformatf("Unexpected: value %p not in values: %p", v, _values)); \
+            end \
+            i = qi[0] - 1; \
+            if (i < 0) i = _values.size() - 1; \
+            return get_by_value(_values[i]); \
+        endfunction \
+        virtual function enum_obj_t first(); \
+            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            return get_by_value(_values[0]); \
+        endfunction \
+        virtual function enum_obj_t last(); \
+            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            return get_by_value(_values[_values.size() - 1]); \
+        endfunction \
+        virtual function bit is_first(); \
+            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            return get_value() === _values[0]; \
+        endfunction \
+        virtual function bit is_last(); \
+            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            return get_value() === _values[_values.size() - 1]; \
+        endfunction \
+        \
+        // NOTE: randomization cannot work with X/Z, so do not call \
+        // .randomize() if you have declared some enumerators with unknown \
+        // values. \
+        constraint value_must_exist_c {value inside {_values};} \
+        protected virtual function void _init_obj(); \
+            if ((_obj == null) || (_resolved_value !== value)) begin \
+                _obj = get_by_value(value); \
+                _resolved_value = value; \
+            end \
+        endfunction \
+        function void post_randomize(); _init_obj(); endfunction \
+        \
+        // Only the ENUM_OBJ_TYPE is used as a wrapper for randomization.  The \
+        // children must not call _init_randomizable_value() because they are \
+        // created before get_min_value() can be called (before anything is in \
+        // _values). \
+        protected virtual function void _init_randomizable_value(); \
+            if (_values.size() > 0) begin \
+                value = _values[0]; \
+                _init_obj(); \
+            end \
         endfunction
 
 // =============================================================================
@@ -182,50 +232,20 @@
         virtual function void set(enum_obj_t rhs); \
             set_by_value(rhs.get_value()); \
         endfunction \
-        virtual function void set_by_name(string n); \
-            set_by_value(get_by_name(n).get_value()); \
-        endfunction \
         \
         virtual function sv_enum_obj_base get_singleton(); _init_obj(); return _obj.get_singleton(); endfunction \
-        virtual function enum_obj_t get_``ENUM_OBJ_TYPE``_singleton(); _init_obj(); return _obj.get_``ENUM_OBJ_TYPE``_singleton(); endfunction \
         virtual function string name(); _init_obj(); return _obj.name(); endfunction \
         virtual function string get_enum_type_name(); _init_obj(); return _obj.get_enum_type_name(); endfunction \
-        virtual function _string_q get_names(); return _names; endfunction \
         virtual function string get_full_name(); _init_obj(); return _obj.get_full_name(); endfunction \
         virtual function SCALAR_T get_value(); _init_obj(); return _obj.get_value(); endfunction \
-        virtual function _scalar_t_q get_values(); return _values; endfunction \
-        virtual function SCALAR_T get_max_value(); return max_value(); endfunction \
-        virtual function SCALAR_T get_min_value(); return min_value(); endfunction \
-        virtual function SCALAR_T get_next_unused_value(); return next_unused_value(); endfunction \
-        virtual function int get_num(); return _values.size(); endfunction \
-        virtual function enum_obj_t get_next(); _init_obj(); return _obj.get_next(); endfunction \
-        virtual function enum_obj_t get_prev(); _init_obj(); return _obj.get_prev(); endfunction \
-        virtual function enum_obj_t get_first(); _init_obj(); return _obj.get_first(); endfunction \
-        virtual function enum_obj_t get_last(); _init_obj(); return _obj.get_last(); endfunction \
-        protected SCALAR_T _resolved_value; \
-        protected virtual function void _init_obj(); \
-            if ((_obj == null) || (_resolved_value !== value)) begin \
-                _obj = get_by_value(value); \
-                _resolved_value = value; \
-            end \
+        virtual function void increment(); \
+            set(next()); \
         endfunction \
-        \
-        // NOTE: randomization cannot work with X/Z, so do not call \
-        // .randomize() if you have declared some enumerators with unknown \
-        // values. \
-        constraint value_must_exist_c {value inside {_values};} \
-        function void post_randomize(); _init_obj(); endfunction \
-        \
-        // Only the ENUM_OBJ_TYPE is used as a wrapper for randomization.  The \
-        // children must not call _init_randomizable_value() because they are \
-        // created before get_min_value() can be called (before anything is in \
-        // _values). \
-        protected virtual function void _init_randomizable_value(); \
-            if (_values.size() > 0) begin \
-                value = _values[0]; \
-                _init_obj(); \
-            end \
-        endfunction
+        virtual function void decrement(); \
+            set(prev()); \
+        endfunction \
+        protected SCALAR_T _resolved_value; \
+        `_SV_ENUM_OBJ_TYPE_VIRTUAL_METHODS_THAT_REFERENCE_STATICS
 
 `define DECL_SV_ENUM_OBJ_END \
     endclass
@@ -344,18 +364,6 @@
             enum_obj_t e = get_by_value(_value); \
             return e.get_full_name(); \
         endfunction \
-        static function enum_obj_t next(); \
-            int qi[$] = _values.find_first_index() with (item === _value); \
-            int i = qi[0] + 1; \
-            if (i >= _values.size()) i = 0; \
-            return get_by_value(_values[i]); \
-        endfunction \
-        static function enum_obj_t prev(); \
-            int qi[$] = _values.find_first_index() with (item === _value); \
-            int i = qi[0] - 1; \
-            if (i < 0) i = _values.size() - 1; \
-            return get_by_value(_values[i]); \
-        endfunction \
         \
         function new(); \
             super.new( `ifdef UVM_POST_VERSION_1_1 _name `endif ); \
@@ -413,9 +421,6 @@
         virtual function sv_enum_obj_base get_singleton(); \
             return get_by_value(_value); \
         endfunction \
-        virtual function enum_obj_t get_``ENUM_OBJ_TYPE``_singleton(); \
-            return get_by_value(_value); \
-        endfunction \
         virtual function string name(); \
             return _name; \
         endfunction \
@@ -424,19 +429,6 @@
         endfunction \
         virtual function string get_full_name(); \
             return _full_name; \
-        endfunction \
-        // Get the next enumerator singleton \
-        virtual function enum_obj_t get_next(); \
-            return next(); \
-        endfunction \
-        virtual function enum_obj_t get_prev(); \
-            return prev(); \
-        endfunction \
-        virtual function enum_obj_t get_first(); \
-            return first(); \
-        endfunction \
-        virtual function enum_obj_t get_last(); \
-            return last(); \
         endfunction \
         virtual function SCALAR_T get_value(); \
             return value(); \
@@ -502,35 +494,10 @@
         endfunction \
         `endif \
         \
-        // Must overwrite the parent's _init_obj() because get_by_value is \
-        // static and needs to access this object's registry copied in from \
-        // the _SV_ENUM_OBJ_TYPE_STATICS macro, not the  parent's copy from \
-        // the same _SV_ENUM_OBJ_TYPE_STATICS macro.  Otherwise, the \
-        // 'EXTEND'ed object will interfere/corrupt original parent's \
-        // (BASE_ENUM_OBJ_TYPE) set of enumerators. \
-        protected virtual function void _init_obj(); \
-            if ((_obj == null) || (_resolved_value !== value)) begin \
-                _obj = get_by_value(value); \
-                _resolved_value = value; \
-            end \
-        endfunction \
-        \
         // Must overwrite the parent's virtual methods that reference statics \
         // that are re-implemented in this object because, although they have \
         // the same name, they are new/different implementations/instances \
-        virtual function _string_q get_names(); return _names; endfunction \
-        virtual function _scalar_t_q get_values(); return _values; endfunction \
-        virtual function int get_num(); return _values.size(); endfunction \
-        virtual function SCALAR_T get_max_value(); return max_value(); endfunction \
-        virtual function SCALAR_T get_min_value(); return min_value(); endfunction \
-        virtual function SCALAR_T get_next_unused_value(); return next_unused_value(); endfunction \
-        virtual function void set_by_name(string n); \
-            set_by_value(get_by_name(n).get_value()); \
-        endfunction \
-        // NOTE: randomization cannot work with X/Z, so do not call \
-        // .randomize() if you have declared some enumerators with unknown \
-        // values. \
-        constraint value_must_exist_c {value inside {_values};}
+        `_SV_ENUM_OBJ_TYPE_VIRTUAL_METHODS_THAT_REFERENCE_STATICS
 
 `define DECL_SV_ENUM_OBJ_EXTEND_END \
     endclass

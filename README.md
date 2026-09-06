@@ -366,17 +366,19 @@ $display("%0s is after green", c.name());
 ```
 write
 ```
-color c = green::next();
+color c = new();
+c.set(green::get());
+c.set(c.next());
 $display("%0s is after green", c.name());
 ```
 or
 ```
 color c = new();
 c.set(green::get());
-c.set(c.get_next());
+c.increment();
 $display("%0s is after green", c.name());
 ```
-_Note that iteration order for `prev`/`next` is declaration order (same as native SV), not `value` order._
+_Note that iteration order for `prev`/`next` and `increment`/`decrement` is declaration order (same as native SV), not `value` order._
 ---
 ### Adding Methods
 Instead of
@@ -459,11 +461,11 @@ write
 
 function automatic string explain_all_animals();
     animal a = new();
-    a.set(a.get_first());
+    a.set(a.first());
     explain_all_animals = "";
     repeat (animal::num()) begin
         explain_all_animals = {explain_all_animals, "\n", explain_animal(a)};
-        a.set(a.get_next());
+        a.increment();
     end
 endfunction
 
