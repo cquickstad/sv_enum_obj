@@ -30,6 +30,8 @@
         protected static enum_obj_t _registry_value[SCALAR_T]; \
         protected static enum_obj_t _registry_name[string]; \
         \
+        protected static string _extended_by = ""; \
+        \
         protected static function enum_obj_t _lookup_by_value(SCALAR_T v); \
             _lookup_by_value = null; \
             if ($isunknown(v)) begin \
@@ -271,6 +273,14 @@
         static function bit _register(); \
             enum_obj_t e; \
             ENUM new_me = new(); \
+            if (_extended_by != "") begin \
+                $fatal(1, {_name, " was added to ", _base_name, " *after* ", \
+                    _extended_by, " was declared to extend ", _base_name, \
+                    ".  Therefore, ", _name, \
+                    " will be unexpectedly missing from ", _extended_by, \
+                    ".  Include and declaration orders are important. ", \
+                    _extended_by, " must be declared after ", _name, "."}); \
+            end \
             _singleton = new_me; \
             if (_name inside {_names}) begin \
                 if (_value === _registry_name[_name].get_value()) begin \
@@ -475,20 +485,14 @@
         `_SV_ENUM_OBJ_TYPE_STATICS \
         \
         // Seed from BASE before any INST in this package registers. \
-        static bit _imported_from_base = _import_from_base(); \
-        static function bit _import_from_base(); \
-            SCALAR_T vs[$] = parent_enum_obj_t::values(); \
-            string   ns[$] = parent_enum_obj_t::names(); \
-            foreach (vs[i]) begin \
-                SCALAR_T v = vs[i]; \
-                string n = ns[i]; \
-                enum_obj_t h = parent_enum_obj_t::get_by_value(v); \
-                _values.push_back(v); \
-                _names.push_back(n); \
-                if (!$isunknown(v)) _registry_value[v] = h; \
-                _registry_name[n] = h; \
-            end \
-            return 1; \
+        protected static int _num_names_imported_from_base = _import_from_base(); \
+        protected static function bit _import_from_base(); \
+            _values = parent_enum_obj_t::_values; \
+            _names = parent_enum_obj_t::_names; \
+            _registry_value = parent_enum_obj_t::_registry_value; \
+            _registry_name = parent_enum_obj_t::_registry_name; \
+            parent_enum_obj_t::_extended_by = _base_name; \
+            return _registry_name.size(); \
         endfunction \
         \
         `ifdef UVM_POST_VERSION_1_1 \
