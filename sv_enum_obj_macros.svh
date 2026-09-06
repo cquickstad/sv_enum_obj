@@ -37,7 +37,7 @@
             if ($isunknown(v)) begin \
                 foreach (_registry_name[n]) begin \
                     enum_obj_t e = _registry_name[n]; \
-                    if (e.get_value === v) begin \
+                    if (e.get_value() === v) begin \
                         _lookup_by_value = e; \
                         break; \
                     end \
