@@ -323,22 +323,22 @@ a.set(green::get());
 assert(a.get_singleton() inside {b.get_singleton(), c.get_singleton()});
 
 a.set(red::get());
-assert(!a.get_singleton() inside {b.get_singleton(), c.get_singleton()});
+assert(!(a.get_singleton() inside {b.get_singleton(), c.get_singleton()}));
 ```
 or
 ```
 color a = new();
 
 a.set(green::get());
-assert(a.get_singleton() inside ({green::get(), blue::get()}));
+assert(a.get_singleton() inside {green::get(), blue::get()});
 
 a.set(red::get());
-assert(!a.get_singleton() inside ({green::get(), blue::get()}));
+assert(!(a.get_singleton() inside {green::get(), blue::get()}));
 ```
 or
 ```
-assert(green::get() inside ({green::get(), blue::get()}))
-assert(green::value() inside {green::value(), blue::value()})
+assert(green::get() inside {green::get(), blue::get()});
+assert(green::value() inside {green::value(), blue::value()});
 ```
 ---
 ### Testing Range
