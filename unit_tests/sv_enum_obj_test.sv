@@ -131,6 +131,9 @@ import sv_enum_obj_pkg::*;
 
     `ASSERT_EQ(indigo::get(), purple::get())
     `ASSERT_EQ(indigo::get(), violet::get())
+
+    `ASSERT_STR_EQ(color::get_by_name("violet").name(), "indigo")
+    `ASSERT_STR_EQ(color::get_by_name("purple").name(), "indigo")
 `END_SV_TEST
 
 

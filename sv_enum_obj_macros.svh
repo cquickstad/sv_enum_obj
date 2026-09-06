@@ -337,13 +337,19 @@
                 string prev_name = prev_enum.name(); \
                 // Replace the name, keeping the order the same: \
                 int qi[$] = _names.find_first_index() with (item == prev_name); \
+                string qs[$]; \
                 _names[qi[0]] = _name; \
                 if (_debug) begin \
                     $display("SV ENUM SINGLETON OVERRIDE: %0s.%0s(handle=%0x) -> %0s.%0s(handle=%0x) (value=%p)", \
                         _base_name, prev_name, prev_enum, \
                         _base_name, _name, _singleton, _value); \
                 end \
-                _registry_name[prev_name] = _singleton; \
+                // Support multiple overrides of the same value. All of the \
+                // names should alias to the last override. \
+                foreach (_registry_name[n]) begin \
+                    if (_registry_name[n] == _registry_name[prev_name]) qs.push_back(n); \
+                end \
+                foreach (qs[i]) _registry_name[qs[i]] = _singleton; \
             end else begin \
                 if (_debug) begin \
                     $display("SV ENUM SINGLETON REGISTERED: %0s.%0s(handle=%0x) (value=%p)", \
