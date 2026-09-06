@@ -289,8 +289,8 @@
             return get_by_value(_value); \
         endfunction \
         \
-        static bit _side_effect = _register(); \
-        static function bit _register(); \
+        protected static bit _side_effect = _register(); \
+        protected static function bit _register(); \
             enum_obj_t e; \
             ENUM new_me = new(); \
             if (_extended_by != "") begin \
@@ -471,7 +471,7 @@
 
 `define DECL_SV_ENUM_OBJ_EXTEND_BEGIN(ENUM_OBJ_TYPE, BASE_ENUM_OBJ_TYPE) \
     class ENUM_OBJ_TYPE extends BASE_ENUM_OBJ_TYPE; \
-        static string _base_name = `"ENUM_OBJ_TYPE`"; \
+        protected static string _base_name = `"ENUM_OBJ_TYPE`"; \
         typedef BASE_ENUM_OBJ_TYPE parent_enum_obj_t; \
         \
         `_SV_ENUM_OBJ_TYPE_STATICS \
