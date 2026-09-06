@@ -476,7 +476,7 @@ function automatic string explain_animal(animal a);
         a.name(), legs, ride);
 endfunction
 ```
-To illustrate how extendable the class-based solution is, as you project grows, more animals can be added simply by declaring them.
+To illustrate how extendable the class-based solution is, as your project grows, more animals can be added simply by declaring them.
 
 This illustrates the _dependency inversion principle_ (the D in SOLID). Both `explain_animal()` and the individual animals depend on the `animal` base class.
 ```
