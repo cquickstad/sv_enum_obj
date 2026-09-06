@@ -854,3 +854,18 @@ endpackage
 `END_SV_TEST
 
 
+`DECL_SV_ENUM_OBJ(enum_foo)
+`DECL_SV_ENUM_OBJ_INST(enum_foo, foo_a, 1)
+`DECL_SV_ENUM_OBJ_INST(enum_foo, foo_a_override, 1)
+
+`DECL_SV_ENUM_OBJ_EXTEND(ext_enum_foo, enum_foo)
+// `DECL_SV_ENUM_OBJ_INST(enum_foo, foo_b, 1) // $fatal's after ext_enum_foo
+
+`SV_TEST(test_sv_enum_extend_after_override)
+    ext_enum_foo f = new();
+    f.set_by_value(1);
+    `ASSERT_STR_EQ(f.name(), "foo_a_override")
+    f.set_by_name("foo_a");
+    `ASSERT_STR_EQ(f.name(), "foo_a_override")
+`END_SV_TEST
+
