@@ -83,3 +83,43 @@ import sv_enum_obj_pkg::*;
     b = sub::get();
     `ASSERT_TRUE_LOG(b.compare(a), {b.name(), " different from ", a.name()})
 `END_RUN_PHASE_TEST
+
+
+
+`DECL_SV_ENUM_OBJ(uvm_color)
+`DECL_SV_ENUM_OBJ_INST(uvm_color, red)
+`DECL_SV_ENUM_OBJ_INST(uvm_color, green)
+
+`DECL_SV_ENUM_OBJ_EXTEND(ext_uvm_color, uvm_color)
+`DECL_SV_ENUM_OBJ_INST(ext_uvm_color, blue)
+
+`RUN_PHASE_TEST(test_uvm_override_and_increment_decrement)
+    uvm_color c;
+    ext_uvm_color ec;
+    set_type_override_by_type(uvm_color::get_type(), ext_uvm_color::get_type());
+    c = uvm_color::type_id::create("c", this);
+    ec = ext_uvm_color::type_id::create("ec", this);
+    `ASSERT_STR_EQ(c.get_type_name(), "ext_uvm_color")
+    `ASSERT_STR_EQ(ec.get_type_name(), "ext_uvm_color")
+
+    `ASSERT_EQ(uvm_color::num(), 2)
+    `ASSERT_EQ(c.num(), 2) // CAUTION: this calls the static method above, not ext_uvm_color's!
+
+    `ASSERT_EQ(ext_uvm_color::num(), 3)
+    `ASSERT_EQ(ec.num(), 3)
+
+    `ASSERT_EQ(c.get_num(), 3)
+    `ASSERT_EQ(ec.get_num(), 3)
+
+    c.set(c.first());
+    `ASSERT_STR_EQ(c.name(), "red")
+    c.increment();
+    `ASSERT_STR_EQ(c.name(), "green")
+    c.increment();
+    `ASSERT_STR_EQ(c.name(), "blue")
+    c.increment();
+    `ASSERT_STR_EQ(c.name(), "red")
+    c.decrement();
+    `ASSERT_STR_EQ(c.name(), "blue")
+`END_RUN_PHASE_TEST
+
