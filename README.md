@@ -512,6 +512,10 @@ package later_pkg;
     // AVOID THIS!!! LAST RESORT ONLY!!!
     `DECL_SV_ENUM_OBJ_INST(original_pkg::color, blue)
 endpackage
+
+// Note that some simulators may require the patching package to be referenced/
+// used beyond the declaration or it may be optimized away!
+static int _need_sideeffect = later_pkg::blue::value();
 ```
 
 Avoid monkey-patching by using the 'O' (Open-Closed Principle) in SOLID.  Extend the original class using polymorphism:
