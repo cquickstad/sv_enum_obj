@@ -120,35 +120,35 @@ Adding the `+DEBUG_SV_ENUM_OBJ` plusarg to the command line will cause the libra
 ### Allocation
 The classes representing the individual enumerators are singletons and should never be `new()`ed or `created()`ed:
 
-`red var = new(); // BAD!!! Will $fatal()`
+`red my_red = new(); // BAD!!! Will $fatal()`
 
 Instead, a handle to the singleton for any enumerator may be retrieved with `::get()`:
 
-`red var = red::get(); // Good. Get the singleton. There can be only one!`
+`red my_red = red::get(); // Good. Get the singleton. There can be only one!`
 
 The base class can be a handle to any of the child enumerators:
 
-`color var = red::get();`
+`color c = red::get();`
 
 Just be sure not to try and change an immutable singleton:
 ```
-color var = red::get();
-var.set_by_value(2); // BAD!!! Will $fatal()
+color c = red::get();
+c.set_by_value(2); // BAD!!! Will $fatal()
 ```
 
 If the base class is allocated with `new()` (or `create()` if you're using UVM), then the object is mutable. It can be set to any of the enumerated values or randomized.
 
 ```
-color var = new();
-bit success = var.randomize(); // Good. Mutable.
-var.set_by_value(2); // Good. Mutable.
-var.set_by_name("red"); // Good. Mutable.
-var.set(green::get()); // Good. Mutable.
+color c = new();
+bit success = c.randomize(); // Good. Mutable.
+c.set_by_value(2); // Good. Mutable.
+c.set_by_name("red"); // Good. Mutable.
+c.set(green::get()); // Good. Mutable.
 ```
 
 If UVM is not imported into your environment, then use `new()`, but if you are using UVM, call `create()` instead:
 ```
-color var = color::type_id::create("var");
+color c = color::type_id::create("c");
 ```
 
 Factory overrides are possible for any new base/wrapper object derived from `color`.
@@ -161,12 +161,12 @@ Factory overrides are possible for any new base/wrapper object derived from `col
 ...
 set_type_override_by_type(color::get_type(), my_extended_color::get_type())
 ...
-color var = color::type_id::create("var"); // Actually creates my_extended_color
-var.set_by_name("turquoise"); // Good: "turquoise" available to my_extended_color
-var.set_by_name("red"); // Good: "red" inherited from parent, color.
+color c = color::type_id::create("c"); // Actually creates my_extended_color
+c.set_by_name("turquoise"); // Good: "turquoise" available to my_extended_color
+c.set_by_name("red"); // Good: "red" inherited from parent, color.
 ...
-color var = new();
-var.set_by_name("turquoise"); // BAD!!! $fatal() because turquoise belongs to my_extended_color
+color c = new();
+c.set_by_name("turquoise"); // BAD!!! $fatal() because turquoise belongs to my_extended_color
 ```
 
 ---
