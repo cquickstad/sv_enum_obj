@@ -121,5 +121,16 @@ import sv_enum_obj_pkg::*;
     `ASSERT_STR_EQ(c.name(), "red")
     c.decrement();
     `ASSERT_STR_EQ(c.name(), "blue")
+
+    c.set_to_last();
+    `ASSERT_STR_EQ(c.name(), "blue")
+    c.decrement();
+    `ASSERT_STR_EQ(c.name(), "green")
+    c.decrement();
+    `ASSERT_STR_EQ(c.name(), "red")
+    c.decrement();
+    `ASSERT_STR_EQ(c.name(), "blue")
+    c.increment();
+    `ASSERT_STR_EQ(c.name(), "red")
 `END_RUN_PHASE_TEST
 
