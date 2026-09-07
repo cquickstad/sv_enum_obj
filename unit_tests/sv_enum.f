@@ -1,5 +1,6 @@
 -timescale 1ps/1ps
 -linedebug
+-parseinfo macro
 -xmallerror
 -nowarn NODNTW:DSEMEL:DSEM2009:RNDXCELON:TSNSPK:SRCDEPR:SPDUSD:OLDURR:UNOPCH
 -sv
