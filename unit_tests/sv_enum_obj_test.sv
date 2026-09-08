@@ -167,11 +167,12 @@ import sv_enum_obj_pkg::*;
 
 
 `SV_TEST(test_sv_enum_helpers)
-    `ASSERT_EQ(color::max_value(), 3)
-    `ASSERT_EQ(color::min_value(), 0)
-    `ASSERT_EQ(color::next_unused_value(), 4)
-    `ASSERT_AP_EQ_STR(color::values(), "'{'h0, 'h1, 'h2, 'h3}")
-    `ASSERT_AP_EQ_STR(color::names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
+    color c = new();
+    `ASSERT_EQ(c.get_max_value(), 3)
+    `ASSERT_EQ(c.get_min_value(), 0)
+    `ASSERT_EQ(c.get_next_unused_value(), 4)
+    `ASSERT_AP_EQ_STR(c.get_values(), "'{'h0, 'h1, 'h2, 'h3}")
+    `ASSERT_AP_EQ_STR(c.get_names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
 `END_SV_TEST
 
 
@@ -454,7 +455,7 @@ package original_pkg;
         animal a = new();
         a.set(a.first());
         explain_all_animals = "";
-        repeat (animal::num()) begin
+        repeat (a.get_num()) begin
             explain_all_animals = {explain_all_animals, "\n", explain_animal(a)};
             a.increment();
         end
@@ -605,8 +606,8 @@ endpackage
 `SV_TEST(test_sv_enum_extended_in_another_package_without_changing_the_original)
     first_pkg::opcode opc1 = new();
     second_pkg::opcode opc2 = new();
-    string s1[$] = first_pkg::opcode::names();
-    string s2[$] = second_pkg::opcode::names();
+    string s1[$] = opc1.get_names();
+    string s2[$] = opc2.get_names();
     `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
 
     // Same name for "sub", but it's really a different one in a different package
@@ -654,16 +655,13 @@ endpackage
 `SV_TEST(test_sv_enum_extended_in_the_same_package_without_changing_the_original)
     one_single_pkg::opcode good = new();
     one_single_pkg::bad_opcode bad = new();
-    string s1[$] = one_single_pkg::opcode::names();
-    string s2[$] = one_single_pkg::bad_opcode::names();
+    string s1[$] = good.get_names();
+    string s2[$] = bad.get_names();
     `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
     `ASSERT_AP_EQ_STR(s2, "'{\"bad_add\", \"bad_sub\", \"third_op\"}")
-    s1 = good.get_names();
-    s2 = bad.get_names();
-    `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
-    `ASSERT_AP_EQ_STR(s2, "'{\"bad_add\", \"bad_sub\", \"third_op\"}")
-    `ASSERT_EQ(good.num(), 2)
-    `ASSERT_EQ(bad.num(), 3)
+
+    `ASSERT_EQ(good.get_num(), 2)
+    `ASSERT_EQ(bad.get_num(), 3)
 
     good.set_by_name("sub");
     `ASSERT_STR_EQ(good.name(), "sub")
@@ -779,7 +777,7 @@ endpackage
     // $fatal because no max or min can be determined.
     // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
     // `ASSERT_EQ(four_value_enum::min_value(), 3'b000)
-    `ASSERT_EQ(four_value_enum::next_unused_value(), 3'b000)
+    `ASSERT_EQ(e.get_next_unused_value(), 3'b000)
 
     `ASSERT_EQ(enum_value_0x::value(), 3'b00x)
     `ASSERT_EQ(enum_value_1x::value(), 3'b01x)

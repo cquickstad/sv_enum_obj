@@ -102,12 +102,6 @@ import sv_enum_obj_pkg::*;
     `ASSERT_STR_EQ(c.get_type_name(), "ext_uvm_color")
     `ASSERT_STR_EQ(ec.get_type_name(), "ext_uvm_color")
 
-    `ASSERT_EQ(uvm_color::num(), 2)
-    `ASSERT_EQ(c.num(), 2) // CAUTION: this calls the static method above, not ext_uvm_color's!
-
-    `ASSERT_EQ(ext_uvm_color::num(), 3)
-    `ASSERT_EQ(ec.num(), 3)
-
     `ASSERT_EQ(c.get_num(), 3)
     `ASSERT_EQ(ec.get_num(), 3)
 

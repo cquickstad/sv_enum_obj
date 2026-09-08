@@ -71,16 +71,10 @@
             return _registry_name[n]; \
         endfunction \
         \
-        static function int num(); \
+        protected static function int _num(); \
             return _values.size(); \
         endfunction \
-        static function _scalar_t_q values(); \
-            return _values; \
-        endfunction \
-        static function _string_q names(); \
-            return _names; \
-        endfunction \
-        static function SCALAR_T max_value(); \
+        protected static function SCALAR_T _max_value(); \
             SCALAR_T q[$] = _two_value_values.max(); \
             if (q.size() > 0) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
@@ -88,7 +82,7 @@
                 $sformatf("Failed to find max value for '%0s' among values %p", \
                     _base_name, _values)}); \
         endfunction \
-        static function SCALAR_T min_value(); \
+        protected static function SCALAR_T _min_value(); \
             SCALAR_T q[$] = _two_value_values.min(); \
             if (q.size() > 0) return q[0]; \
             `ifdef INCA $stacktrace; `endif \
@@ -96,12 +90,12 @@
                 $sformatf("Failed to find min value for '%0s' among values %p", \
                     _base_name, _values)}); \
         endfunction \
-        static function SCALAR_T next_unused_value(); \
+        protected static function SCALAR_T _next_unused_value(); \
             enum_obj_t e; \
             SCALAR_T candidate, max; \
             if (_two_value_values.size() == 0) return '0; \
-            candidate = min_value(); \
-            max = max_value(); \
+            candidate = _min_value(); \
+            max = _max_value(); \
             forever begin \
                 e = _lookup_by_value(candidate); \
                 if (e == null) return candidate; \
@@ -125,9 +119,9 @@
         endfunction \
         virtual function _string_q get_names(); return _names; endfunction \
         virtual function _scalar_t_q get_values(); return _values; endfunction \
-        virtual function SCALAR_T get_max_value(); return max_value(); endfunction \
-        virtual function SCALAR_T get_min_value(); return min_value(); endfunction \
-        virtual function SCALAR_T get_next_unused_value(); return next_unused_value(); endfunction \
+        virtual function SCALAR_T get_max_value(); return _max_value(); endfunction \
+        virtual function SCALAR_T get_min_value(); return _min_value(); endfunction \
+        virtual function SCALAR_T get_next_unused_value(); return _next_unused_value(); endfunction \
         virtual function int get_num(); return _values.size(); endfunction \
         virtual function enum_obj_t next(); \
             SCALAR_T v = get_value(); \
@@ -274,7 +268,7 @@
 //
 // Do not `new()`, `randomize()`, or `set_*()` a singleton. Use `ENUM::get()`.
 // =============================================================================
-`define DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=next_unused_value()) \
+`define DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
     \
     class ENUM extends ENUM_OBJ_TYPE; \
         \
@@ -499,7 +493,7 @@
 `define DECL_SV_ENUM_OBJ_INST_END \
     endclass
 
-`define DECL_SV_ENUM_OBJ_INST(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=next_unused_value()) \
+`define DECL_SV_ENUM_OBJ_INST(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
     `DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE) \
     `DECL_SV_ENUM_OBJ_INST_END
 
