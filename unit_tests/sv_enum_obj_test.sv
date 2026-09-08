@@ -137,6 +137,42 @@ import sv_enum_obj_pkg::*;
 `END_SV_TEST
 
 
+`SV_TEST(test_sv_enum_traverse_using_base)
+    color c = new();
+    sv_enum_obj_base b = c;
+    b.set_first();
+    `ASSERT_TRUE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "red")
+    b.increment();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "green")
+    b.increment();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "blue")
+    b.increment();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_TRUE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "indigo")
+    b.increment();
+    `ASSERT_TRUE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "red")
+    b.set_last();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_TRUE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "indigo")
+    b.decrement();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "blue")
+    b.decrement();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "green")
+    b.decrement();
+    `ASSERT_TRUE(b.is_first()) `ASSERT_FALSE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "red")
+    b.decrement();
+    `ASSERT_FALSE(b.is_first()) `ASSERT_TRUE(b.is_last())
+    `ASSERT_STR_EQ(b.name(), "indigo")
+`END_SV_TEST
+
+
 `SV_TEST(test_sv_enum_helpers)
     `ASSERT_EQ(color::max_value(), 3)
     `ASSERT_EQ(color::min_value(), 0)

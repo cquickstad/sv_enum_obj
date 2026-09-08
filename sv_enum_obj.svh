@@ -81,8 +81,8 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     pure virtual function _string_q get_names();
     pure virtual function string get_enum_type_name();
 
-    // Set the value held by this holder to the the enumerator referenced by
-    // the indicated name.  If an overridden name is supplied, then the new
+    // Set the value held by this holder to the enumerator referenced by the
+    // indicated name.  If an overridden name is supplied, then the new
     // enumerator is set, not the old.
     //
     // Fatals if `n` is not the name of a registered enumerator.
@@ -90,6 +90,14 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     // Call enum_type::names() or enum_instance.get_names() to get the set of
     // registered enumerator names.
     pure virtual function void set_by_name(string n);
+
+    // Set the value held by this holder to the first enumerator to be declared
+    // for the type.
+    pure virtual function void set_first();
+
+    // Set the value held by this holder to the last enumerator to be declared
+    // for the type.
+    pure virtual function void set_last();
 
     // The number of enumerators in the enumeration
     pure virtual function int get_num();

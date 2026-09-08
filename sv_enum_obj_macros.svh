@@ -232,6 +232,8 @@
         virtual function void set(enum_obj_t rhs); \
             set_by_value(rhs.get_value()); \
         endfunction \
+        virtual function void set_first(); set(first()); endfunction \
+        virtual function void set_last(); set(last()); endfunction \
         \
         virtual function sv_enum_obj_base get_singleton(); _init_obj(); return _obj.get_singleton(); endfunction \
         virtual function string name(); _init_obj(); return _obj.name(); endfunction \
