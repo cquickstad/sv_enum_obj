@@ -91,6 +91,11 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     // registered enumerator names.
     pure virtual function void set_by_name(string n);
 
+    // Set the value held by this holder to the enumerator referenced by the
+    // indicated int value.  Performs a static cast of the int to the SCALAR_T.
+    // Fatals the result of the cast does not map to a registered value.
+    pure virtual function void set_by_int(int v);
+
     // Set the value held by this holder to the first enumerator to be declared
     // for the type.
     pure virtual function void set_first();
@@ -165,6 +170,21 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     virtual function void set_by_value(SCALAR_T v);
         value = v;
         _init_obj();
+    endfunction
+
+    // Set the value held by this holder to the enumerator referenced by the
+    // indicated int value.  Performs a static cast of the int to the SCALAR_T.
+    // Fatals the result of the cast does not map to a registered value.
+    virtual function void set_by_int(int v);
+        SCALAR_T tmp = SCALAR_T'(v);
+        if (int'(tmp) != v) begin
+            `ifdef INCA $stacktrace; `endif
+            $fatal(1,{"SV ENUM OBJECT FATAL: ", base_name(),
+                ".set_by_int(): int value ", $sformatf("%0d", v),
+                " could not be converted to SCALAR_T."});
+            return;
+        end
+        set_by_value(tmp);
     endfunction
 
     // Getter for value

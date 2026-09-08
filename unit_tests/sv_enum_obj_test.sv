@@ -191,6 +191,8 @@ import sv_enum_obj_pkg::*;
     `ASSERT_STR_EQ(c.name(), "green")
     c.set_by_value(3);
     `ASSERT_STR_EQ(c.name(), "indigo")
+    c.set_by_int(3);
+    `ASSERT_STR_EQ(c.name(), "indigo")
     c.set_by_name("blue");
     `ASSERT_STR_EQ(c.name(), "blue")
     `ASSERT_EQ(c.get_value(), 2)
@@ -904,6 +906,8 @@ endpackage
 `SV_TEST(test_sv_enum_extend_after_override)
     ext_enum_foo f = new();
     f.set_by_value(1);
+    `ASSERT_STR_EQ(f.name(), "foo_a_override")
+    f.set_by_int(1);
     `ASSERT_STR_EQ(f.name(), "foo_a_override")
     f.set_by_name("foo_a");
     `ASSERT_STR_EQ(f.name(), "foo_a_override")
