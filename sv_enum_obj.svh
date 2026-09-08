@@ -203,7 +203,7 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     // enumerator be added.  If no enumerators are registered, then the value
     // starts at zero.  If there are one or more gaps in the set of enumerator
     // values, then the least open value is selected.
-    pure virtual function SCALAR_T get_next_unused_value();
+    pure virtual function SCALAR_T next_unused_value();
 
     // Returns the static cast of the current value to int.
     // Fatals on X/Z or if SCALAR_T is wider than int.

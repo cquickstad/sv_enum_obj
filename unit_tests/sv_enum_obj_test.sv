@@ -170,7 +170,7 @@ import sv_enum_obj_pkg::*;
     color c = new();
     `ASSERT_EQ(c.max_value(), 3)
     `ASSERT_EQ(c.min_value(), 0)
-    `ASSERT_EQ(c.get_next_unused_value(), 4)
+    `ASSERT_EQ(c.next_unused_value(), 4)
     `ASSERT_AP_EQ_STR(c.get_values(), "'{'h0, 'h1, 'h2, 'h3}")
     `ASSERT_AP_EQ_STR(c.names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
 `END_SV_TEST
@@ -313,13 +313,13 @@ endclass
     `ASSERT_STR_EQ(my_op.full_name(), "op.add")
     `ASSERT_EQ(my_op.min_value(), 0)
     `ASSERT_EQ(my_op.max_value(), 1)
-    `ASSERT_EQ(my_op.get_next_unused_value(), 2)
+    `ASSERT_EQ(my_op.next_unused_value(), 2)
     my_op.value = 1;
     `ASSERT_EQ(my_op.get_value(), 1)
     `ASSERT_STR_EQ(my_op.full_name(), "op.sub")
     `ASSERT_EQ(my_op.min_value(), 0)
     `ASSERT_EQ(my_op.max_value(), 1)
-    `ASSERT_EQ(my_op.get_next_unused_value(), 2)
+    `ASSERT_EQ(my_op.next_unused_value(), 2)
 `END_SV_TEST
 
 
@@ -337,7 +337,7 @@ endclass
     `ASSERT_STR_EQ(pet.full_name(), "animal.fox")
     `ASSERT_EQ(pet.min_value(), 9)
     `ASSERT_EQ(pet.max_value(), 1000)
-    `ASSERT_EQ(pet.get_next_unused_value(), 10)
+    `ASSERT_EQ(pet.next_unused_value(), 10)
 `END_SV_TEST
 
 `SV_TEST(test_sv_enum_next)
@@ -389,7 +389,7 @@ endclass
 `DECL_SV_ENUM_OBJ_INST(value_gap_enum, value_three, 3)
 `SV_TEST(test_sv_enum_next_unused_value)
     value_gap_enum e = new();
-    `ASSERT_EQ(e.get_next_unused_value(), 1)
+    `ASSERT_EQ(e.next_unused_value(), 1)
 `END_SV_TEST
 
 
@@ -678,7 +678,7 @@ endpackage
     `ASSERT_AP_EQ_STR(bad.get_values(), "'{0, 1, 2}")
     `ASSERT_EQ(bad.num(), 3)
     `ASSERT_EQ(bad.max_value(), 2)
-    `ASSERT_EQ(bad.get_next_unused_value(), 3)
+    `ASSERT_EQ(bad.next_unused_value(), 3)
 
     `ASSERT_TRUE(bad.randomize() with {value == 2;})
 
@@ -777,7 +777,7 @@ endpackage
     // $fatal because no max or min can be determined.
     // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
     // `ASSERT_EQ(four_value_enum::min_value(), 3'b000)
-    `ASSERT_EQ(e.get_next_unused_value(), 3'b000)
+    `ASSERT_EQ(e.next_unused_value(), 3'b000)
 
     `ASSERT_EQ(enum_value_0x::value(), 3'b00x)
     `ASSERT_EQ(enum_value_1x::value(), 3'b01x)
