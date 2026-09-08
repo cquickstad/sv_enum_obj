@@ -108,9 +108,6 @@
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, \
                 ".next_unused_value: There are no more available ", \
                 "values in the type space."}); \
-        endfunction \
-        static function string enum_type_name(); \
-            return _base_name; \
         endfunction
 
 `define _SV_ENUM_OBJ_TYPE_VIRTUAL_METHODS_THAT_REFERENCE_STATICS \
