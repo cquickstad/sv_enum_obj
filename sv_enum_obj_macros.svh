@@ -122,7 +122,7 @@
         virtual function SCALAR_T get_max_value(); return _max_value(); endfunction \
         virtual function SCALAR_T get_min_value(); return _min_value(); endfunction \
         virtual function SCALAR_T get_next_unused_value(); return _next_unused_value(); endfunction \
-        virtual function int get_num(); return _values.size(); endfunction \
+        virtual function int num(); return _values.size(); endfunction \
         virtual function enum_obj_t next(); \
             SCALAR_T v = get_value(); \
             int i, qi[$] = _values.find_first_index() with (item === v); \
@@ -482,9 +482,9 @@
                 "instead."}); \
             return '0; \
         endfunction \
-        virtual function int get_num(); \
+        virtual function int num(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
-                "Avoid calling get_num() on the singleton ", \
+                "Avoid calling num() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return -1; \

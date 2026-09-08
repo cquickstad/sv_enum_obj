@@ -455,7 +455,7 @@ package original_pkg;
         animal a = new();
         a.set(a.first());
         explain_all_animals = "";
-        repeat (a.get_num()) begin
+        repeat (a.num()) begin
             explain_all_animals = {explain_all_animals, "\n", explain_animal(a)};
             a.increment();
         end
@@ -660,8 +660,8 @@ endpackage
     `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
     `ASSERT_AP_EQ_STR(s2, "'{\"bad_add\", \"bad_sub\", \"third_op\"}")
 
-    `ASSERT_EQ(good.get_num(), 2)
-    `ASSERT_EQ(bad.get_num(), 3)
+    `ASSERT_EQ(good.num(), 2)
+    `ASSERT_EQ(bad.num(), 3)
 
     good.set_by_name("sub");
     `ASSERT_STR_EQ(good.name(), "sub")
@@ -676,7 +676,7 @@ endpackage
     `ASSERT_EQ(bad.calc(2, 3), 0)
 
     `ASSERT_AP_EQ_STR(bad.get_values(), "'{0, 1, 2}")
-    `ASSERT_EQ(bad.get_num(), 3)
+    `ASSERT_EQ(bad.num(), 3)
     `ASSERT_EQ(bad.get_max_value(), 2)
     `ASSERT_EQ(bad.get_next_unused_value(), 3)
 

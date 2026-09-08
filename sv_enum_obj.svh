@@ -105,7 +105,7 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     pure virtual function void set_last();
 
     // The number of enumerators in the enumeration
-    pure virtual function int get_num();
+    pure virtual function int num();
 
     // "Type.enumerator", e.g. "color.red". Follows override to the final name.
     pure virtual function string full_name();

@@ -102,8 +102,8 @@ import sv_enum_obj_pkg::*;
     `ASSERT_STR_EQ(c.get_type_name(), "ext_uvm_color")
     `ASSERT_STR_EQ(ec.get_type_name(), "ext_uvm_color")
 
-    `ASSERT_EQ(c.get_num(), 3)
-    `ASSERT_EQ(ec.get_num(), 3)
+    `ASSERT_EQ(c.num(), 3)
+    `ASSERT_EQ(ec.num(), 3)
 
     c.set_first();
     `ASSERT_STR_EQ(c.name(), "red")
