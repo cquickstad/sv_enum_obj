@@ -150,7 +150,7 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
 
     function new( `ifdef UVM_POST_VERSION_1_1 string name="sv_enum_obj" `endif );
         super.new( `ifdef UVM_POST_VERSION_1_1 name `endif );
-        _init_randomizable_value();
+        _initialize_value();
     endfunction
 
     // WARNING: When inheriting from an enum object, post_randomize() must call
@@ -256,5 +256,5 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
 
     // Called by the constructor so that a valid value exists after the holder
     // is holding a valid enumerated type after allocation.
-    protected pure virtual function void _init_randomizable_value();
+    protected pure virtual function void _initialize_value();
 endclass

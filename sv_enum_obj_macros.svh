@@ -178,10 +178,10 @@
         function void post_randomize(); _init_obj(); endfunction \
         \
         // Only the ENUM_OBJ_TYPE is used as a wrapper for randomization.  The \
-        // children must not call _init_randomizable_value() because they are \
+        // children must not call _initialize_value() because they are \
         // created before get_min_value() can be called (before anything is in \
         // _values). \
-        protected virtual function void _init_randomizable_value(); \
+        protected virtual function void _initialize_value(); \
             if (_values.size() > 0) begin \
                 value = _values[0]; \
                 _init_obj(); \
