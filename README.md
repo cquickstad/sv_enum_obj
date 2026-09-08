@@ -115,6 +115,7 @@ The line `` `DECL_SV_ENUM_OBJ_INST(color, blue)`` will declare the following cla
 The `red`, `green`, and `blue` enumerators are singleton classes that may be used directly. They are immutable and a fatal will result from attempting to change them or `new()` them (use `::get()` instead). Where randomization is required, the `color` wrapper/holder class should be created with `new()`, after which `.randomize()` may be called and the `value` member referenced from constraints.  The `color` class may also be used as a handle to any of the immutable singleton enumerators.  You may use the `is_holder()` and `is_singleton()` methods to determine what is being pointed to by the handle and avoid triggering a fatal error.
 
 Adding the `+DEBUG_SV_ENUM_OBJ` plusarg to the command line will cause the library to print enumerator registrations and overrides.
+
 ---
 
 ### Allocation
@@ -173,6 +174,7 @@ c.set_by_name("red"); // Good: "red" inherited from parent, color.
 color c = new();
 c.set_by_name("turquoise"); // BAD!!! $fatal() because turquoise belongs to my_extended_color
 ```
+
 ---
 ### 4-State Values With Unknowns
 Instead of
@@ -193,6 +195,7 @@ write
 `DECL_SV_ENUM_OBJ_INST(four_val, ZEE, 1'bZ)
 ```
 _(Note that if all values have an unknown in them, then max_value() and min_value() will $fatal because no max or min can be determined in such a situation.)_
+
 ---
 ### Randomization
 Instead of
@@ -205,6 +208,7 @@ write
 color c = new();
 bit success = c.randomize() with {value != green::value();};
 ```
+
 ---
 ### Randomization/Constraints in an Object
 Instead of
@@ -234,6 +238,7 @@ endclass
 _(Remember that if a class handle members are declared as `rand`, and are not `null` when `.randomize()` is called on the class, SystemVerilog will follow the handles and also call `.randomize()` on those classes.  In other words, calling `item.randomize()` in the above example, will also cause `item.c.randomize()` to be called.  The order of operations: `item.pre_randomize()` is called; `c.pre_randomize()` is called; `item` is randomized; `c` is randomized; `item.post_randomize()` is called; `c.post_randomize()` is called.)_
 
 _(Remember that SystemVerilog randomization cannot select unknown values.  If you register an enumeration with unknown values, randomization will be attempted, but none of the values containing unknown (X or Z) can be chosen.  This behavior follows SV's native enums, when they are defined with unknown value encodings.)_
+
 ---
 ### Accessing the Scalar Representation
 Instead of
@@ -256,6 +261,7 @@ or simply
 ```
 int i = blue::value();
 ```
+
 ---
 ### Converting a Scalar to the Enumeration
 Instead of
@@ -271,6 +277,7 @@ or
 ```
 color c = color::get_by_value(2); // c is pointing to the blue immutable singleton
 ```
+
 ---
 ### Converting a String to the Enumeration
 Instead of
@@ -292,6 +299,7 @@ or
 ```
 color c = color::get_by_name("blue"); // c is pointing to the blue immutable singleton
 ```
+
 ---
 ### Comparing enums
 Instead of
@@ -325,6 +333,7 @@ color c = blue::get();
 assert(a.is(b));
 assert(!a.is(c));
 ```
+
 ---
 ### Testing Set Membership
 Instead of
@@ -364,6 +373,7 @@ or
 assert(green::get() inside {green::get(), blue::get()});
 assert(green::value() inside {green::value(), blue::value()});
 ```
+
 ---
 ### Testing Range
 Instead of
@@ -376,6 +386,7 @@ write
 color a = green::get();
 assert(a.get_value() inside {[red::value(), blue::value()]});
 ```
+
 ---
 ### Built-In Enum Methods
 Instead of
@@ -433,6 +444,7 @@ forever begin
 end
 ```
 _Note that iteration order for `prev`/`next` and `increment`/`decrement` is declaration order (same as native SV), not `value` order._
+
 ---
 ### Adding Methods
 Instead of
