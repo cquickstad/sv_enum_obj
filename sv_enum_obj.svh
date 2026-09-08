@@ -80,6 +80,15 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     pure virtual function string name();
     pure virtual function _string_q get_names();
     pure virtual function string get_enum_type_name();
+
+    // Set the value held by this holder to the the enumerator referenced by
+    // the indicated name.  If an overridden name is supplied, then the new
+    // enumerator is set, not the old.
+    //
+    // Fatals if `n` is not the name of a registered enumerator.
+    //
+    // Call enum_type::names() or enum_instance.get_names() to get the set of
+    // registered enumerator names.
     pure virtual function void set_by_name(string n);
 
     // The number of enumerators in the enumeration
@@ -91,6 +100,23 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     // Returns the static cast of the current value to int.
     // Fatals on X/Z or if SCALAR_T is wider than int.
     pure virtual function int get_int_value();
+
+    // When the base enumeration object is instantiated as a holder, the
+    // increment and decrement methods cycle through all of the values/
+    // enumerations of the set.
+    // Progression is in declaration order.
+    // Incrementing at the end will wrap to the beginning.
+    // Decrementing at the beginning will wrap to the beginning.
+    pure virtual function void increment();
+    pure virtual function void decrement();
+
+    // Reports whether the enumerator being held is the first one in the set.
+    // (Declaration order.)
+    pure virtual function bit is_first();
+
+    // Reports whether the enumerator being held is the last one in the set.
+    // (Declaration order.)
+    pure virtual function bit is_last();
 
     // Same enumerator identity? Null `other` is false (not a fatal)
     function bit is(sv_enum_obj_base other);
@@ -132,16 +158,6 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
         value = v;
         _init_obj();
     endfunction
-
-    // Set the value held by this holder to the the enumerator referenced by
-    // the indicated name.  If an overridden name is supplied, then the new
-    // enumerator is set, not the old.
-    //
-    // Fatals if `n` is not the name of a registered enumerator.
-    //
-    // Call enum_type::names() or enum_instance.get_names() to get the set of
-    // registered enumerator names.
-    pure virtual function void set_by_name(string n);
 
     // Getter for value
     pure virtual function SCALAR_T get_value();
