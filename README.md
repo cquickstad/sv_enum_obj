@@ -292,11 +292,6 @@ c.set_by_name("blue"); // c is holding a mutable wrapper object holding blue
 ```
 or
 ```
-color c = new();
-c.set(blue::get()); // c is holding a mutable wrapper object holding blue
-```
-or
-```
 color c = color::get_by_name("blue"); // c is pointing to the blue immutable singleton
 ```
 
