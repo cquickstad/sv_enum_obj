@@ -423,6 +423,24 @@
                 "' type of object instead."}); \
         endfunction \
         \
+        virtual function void increment(); \
+            `ifdef INCA $stacktrace; `endif \
+            $fatal(1, {"SV ENUM OBJECT FATAL: increment() must not be ", \
+                "called on singleton enum-object ", get_full_name(), \
+                " because its value cannot change!  Perhaps you intended ", \
+                "to call increment() on the parent '", _base_name, \
+                "' type of object instead."}); \
+        endfunction \
+        \
+        virtual function void decrement(); \
+            `ifdef INCA $stacktrace; `endif \
+            $fatal(1, {"SV ENUM OBJECT FATAL: decrement() must not be ", \
+                "called on singleton enum-object ", get_full_name(), \
+                " because its value cannot change!  Perhaps you intended ", \
+                "to call decrement() on the parent '", _base_name, \
+                "' type of object instead."}); \
+        endfunction \
+        \
         protected virtual function void _init_obj(); _obj = null; endfunction \
         \
         virtual function sv_enum_obj_base get_singleton(); \
@@ -448,7 +466,19 @@
         endfunction \
         virtual function SCALAR_T get_next_unused_value(); \
             return next_unused_value(); \
-        endfunction
+        endfunction \
+        virtual function _string_q get_names(); \
+            $fatal(1, {"Avoid calling get_names() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return {}; \
+        endfunction \
+        virtual function int get_num(); \
+            $fatal(1, {"Avoid calling get_num() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return -1; \
+        endfunction \
 
 `define DECL_SV_ENUM_OBJ_INST_END \
     endclass
