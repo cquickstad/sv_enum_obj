@@ -194,7 +194,7 @@ write
 `DECL_SV_ENUM_OBJ_INST(four_val, EXX, 1'bX)
 `DECL_SV_ENUM_OBJ_INST(four_val, ZEE, 1'bZ)
 ```
-_(Note that if all values have an unknown in them, then max_value() and min_value() will $fatal because no max or min can be determined in such a situation.)_
+_(Note that if all values have an unknown in them, then max_value() and min_value() will $fatal because no max or min can be determined.)_
 
 ---
 ### Randomization
