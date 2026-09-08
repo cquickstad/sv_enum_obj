@@ -427,14 +427,14 @@ or
 ```
 color c = new();
 $display("%0d colors:", c.num());
-c.set(c.first());
+c.set_first();
 forever begin
     $display("%0s : %0d", c.name(), c.get_value());
     if (c.is_last()) break;
     c.increment();
 end
 $display("Now backwards:");
-c.set(c.last());
+c.set_last();
 forever begin
     $display("%0s : %0d", c.name(), c);
     if (c.is_first()) break;
