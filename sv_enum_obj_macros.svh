@@ -475,6 +475,13 @@
                 "instead."}); \
             return {}; \
         endfunction \
+        virtual function _scalar_t_q get_values(); \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_values() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return {}; \
+        endfunction \
         virtual function int get_num(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                 "Avoid calling get_num() on the singleton ", \
