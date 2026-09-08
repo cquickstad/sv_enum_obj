@@ -111,7 +111,7 @@ import sv_enum_obj_pkg::*;
     `ASSERT_EQ(c.get_num(), 3)
     `ASSERT_EQ(ec.get_num(), 3)
 
-    c.set(c.first());
+    c.set_first();
     `ASSERT_STR_EQ(c.name(), "red")
     c.increment();
     `ASSERT_STR_EQ(c.name(), "green")
@@ -122,7 +122,7 @@ import sv_enum_obj_pkg::*;
     c.decrement();
     `ASSERT_STR_EQ(c.name(), "blue")
 
-    c.set_to_last();
+    c.set_last();
     `ASSERT_STR_EQ(c.name(), "blue")
     c.decrement();
     `ASSERT_STR_EQ(c.name(), "green")
