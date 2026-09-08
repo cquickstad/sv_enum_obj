@@ -43,13 +43,6 @@ import sv_enum_obj_pkg::*;
     `ASSERT_EQ(blue::value(), 2)
     `ASSERT_EQ(purple::value(), 3)
     `ASSERT_EQ(violet::value(), 3)
-
-    `ASSERT_STR_EQ(red::full_name(), "color.red")
-    `ASSERT_STR_EQ(green::full_name(), "color.green")
-    `ASSERT_STR_EQ(blue::full_name(), "color.blue")
-    `ASSERT_STR_EQ(purple::full_name(), "color.indigo") // Double override!
-    `ASSERT_STR_EQ(violet::full_name(), "color.indigo") // Override!
-    `ASSERT_STR_EQ(indigo::full_name(), "color.indigo")
 `END_SV_TEST
 
 
@@ -793,10 +786,10 @@ endpackage
     `ASSERT_EQ(enum_value_xx::value(), 3'b0xx)
     `ASSERT_EQ(enum_value_zx::value(), 3'b0zx)
 
-    `ASSERT_STR_EQ(enum_value_0x::full_name(), "four_value_enum.enum_value_0x")
-    `ASSERT_STR_EQ(enum_value_1x::full_name(), "four_value_enum.enum_value_1x")
-    `ASSERT_STR_EQ(enum_value_xx::full_name(), "four_value_enum.enum_value_xx")
-    `ASSERT_STR_EQ(enum_value_zx::full_name(), "four_value_enum.enum_value_zx")
+    e.set(enum_value_0x::get()); `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_0x")
+    e.set(enum_value_1x::get()); `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_1x")
+    e.set(enum_value_xx::get()); `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_xx")
+    e.set(enum_value_zx::get()); `ASSERT_STR_EQ(e.get_full_name(), "four_value_enum.enum_value_zx")
 
     ee.set(enum_value_zzz::get());
     `ASSERT_STR_EQ(ee.name(), "enum_value_zzz")

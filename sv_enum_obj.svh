@@ -39,7 +39,7 @@
 // Use holders when you need to randomize, assign, or change the current value.
 // Use singletons (`red::get()`, `color::get_by_value(0)`, ...) as immutable
 // identities for comparison, factory lookups, and static queries
-// (`red::value()`, `red::full_name()`, ...).
+// (`red::get()`, `red::value()`).
 //
 //   if (c.is_holder())     c.set(green::get());   // OK
 //   if (c.is_singleton())  /* set_* and randomize() fatal */

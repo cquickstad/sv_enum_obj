@@ -266,12 +266,11 @@
 //
 // Override: a later INST with an already-used encoding (value) replaces the
 // label in `names()`, redirects `::get()` / `get_by_value()` to the new
-// singleton, and chains `name()` / `full_name()` of the earlier INST to the
-// final name.
+// singleton, and chains `name()` of the earlier INST to the final name.
 //
 // Duplicate *names* with different values are fatal.
 // Duplicate names with the same value are begrudgingly allowed.
-// (Duplicate names require defining each is a different package.)
+// (Duplicate names require defining each in a different package.)
 //
 // Do not `new()`, `randomize()`, or `set_*()` a singleton. Use `ENUM::get()`.
 // =============================================================================
@@ -368,11 +367,6 @@
         static function SCALAR_T value(); \
             return _value; \
         endfunction \
-        static function string full_name(); \
-            enum_obj_t e = get_by_value(_value); \
-            return e.get_full_name(); \
-        endfunction \
-        \
         function new(); \
             super.new( `ifdef UVM_POST_VERSION_1_1 _name `endif ); \
             if ((_singleton != null) && (this != _singleton)) begin \
