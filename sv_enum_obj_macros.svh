@@ -112,7 +112,7 @@
             e = _lookup_by_value(candidate); \
             if (e == null) return candidate; \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, \
-                ".get_next_unused_value: There are no more available ", \
+                ".next_unused_value: There are no more available ", \
                 "values in the type space."}); \
         endfunction \
         static function string enum_type_name(); \
@@ -459,15 +459,6 @@
         virtual function SCALAR_T get_value(); \
             return value(); \
         endfunction \
-        virtual function SCALAR_T get_max_value(); \
-            return max_value(); \
-        endfunction \
-        virtual function SCALAR_T get_min_value(); \
-            return min_value(); \
-        endfunction \
-        virtual function SCALAR_T get_next_unused_value(); \
-            return next_unused_value(); \
-        endfunction \
         virtual function _string_q get_names(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                 "Avoid calling get_names() on the singleton ", \
@@ -481,6 +472,27 @@
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return {}; \
+        endfunction \
+        virtual function SCALAR_T get_max_value(); \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_max_value() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return '0; \
+        endfunction \
+        virtual function SCALAR_T get_min_value(); \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_min_value() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return '0; \
+        endfunction \
+        virtual function SCALAR_T get_next_unused_value(); \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_next_unused_value() on the singleton ", \
+                "enumerator. Call only on an instance of the holder ", \
+                "instead."}); \
+            return '0; \
         endfunction \
         virtual function int get_num(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
