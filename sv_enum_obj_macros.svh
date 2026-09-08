@@ -134,7 +134,7 @@
             int i, qi[$] = _values.find_first_index() with (item === v); \
             if (qi.size() == 0) begin \
                 `ifdef INCA $stacktrace; `endif \
-                $fatal(1, $sformatf("Unexpected: value %p not in values: %p", v, _values)); \
+                $fatal(1, $sformatf("SV ENUM OBJECT FATAL: Unexpected: value %p not in values: %p", v, _values)); \
             end \
             i = qi[0] + 1; \
             if (i >= _values.size()) i = 0; \
@@ -145,18 +145,18 @@
             int i, qi[$] = _values.find_first_index() with (item === v); \
             if (qi.size() == 0) begin \
                 `ifdef INCA $stacktrace; `endif \
-                $fatal(1, $sformatf("Unexpected: value %p not in values: %p", v, _values)); \
+                $fatal(1, $sformatf("SV ENUM OBJECT FATAL: Unexpected: value %p not in values: %p", v, _values)); \
             end \
             i = qi[0] - 1; \
             if (i < 0) i = _values.size() - 1; \
             return get_by_value(_values[i]); \
         endfunction \
         virtual function enum_obj_t first(); \
-            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            if (_values.size() == 0) $fatal(1, "SV ENUM OBJECT FATAL: Unexpected: empty enum"); \
             return get_by_value(_values[0]); \
         endfunction \
         virtual function enum_obj_t last(); \
-            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
+            if (_values.size() == 0) $fatal(1, "SV ENUM OBJECT FATAL: Unexpected: empty enum"); \
             return get_by_value(_values[_values.size() - 1]); \
         endfunction \
         virtual function bit is_first(); \
@@ -294,7 +294,8 @@
             enum_obj_t e; \
             ENUM new_me = new(); \
             if (_extended_by != "") begin \
-                $fatal(1, {_name, " was added to ", _base_name, " *after* ", \
+                $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                    _name, " was added to ", _base_name, " *after* ", \
                     _extended_by, " was declared to extend ", _base_name, \
                     ".  Therefore, ", _name, \
                     " will be unexpectedly missing from ", _extended_by, \
@@ -468,13 +469,15 @@
             return next_unused_value(); \
         endfunction \
         virtual function _string_q get_names(); \
-            $fatal(1, {"Avoid calling get_names() on the singleton ", \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_names() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return {}; \
         endfunction \
         virtual function int get_num(); \
-            $fatal(1, {"Avoid calling get_num() on the singleton ", \
+            $fatal(1, {"SV ENUM OBJECT FATAL: ", \
+                "Avoid calling get_num() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return -1; \
