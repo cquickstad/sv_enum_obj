@@ -117,7 +117,7 @@
         virtual function void set_by_name(string n); \
             set_by_value(get_by_name(n).get_value()); \
         endfunction \
-        virtual function _string_q get_names(); return _names; endfunction \
+        virtual function _string_q names(); return _names; endfunction \
         virtual function _scalar_t_q get_values(); return _values; endfunction \
         virtual function SCALAR_T max_value(); return _max_value(); endfunction \
         virtual function SCALAR_T min_value(); return _min_value(); endfunction \
@@ -447,9 +447,9 @@
         virtual function SCALAR_T get_value(); \
             return value(); \
         endfunction \
-        virtual function _string_q get_names(); \
+        virtual function _string_q names(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
-                "Avoid calling get_names() on the singleton ", \
+                "Avoid calling names() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return {}; \

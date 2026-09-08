@@ -172,7 +172,7 @@ import sv_enum_obj_pkg::*;
     `ASSERT_EQ(c.min_value(), 0)
     `ASSERT_EQ(c.get_next_unused_value(), 4)
     `ASSERT_AP_EQ_STR(c.get_values(), "'{'h0, 'h1, 'h2, 'h3}")
-    `ASSERT_AP_EQ_STR(c.get_names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
+    `ASSERT_AP_EQ_STR(c.names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
 `END_SV_TEST
 
 
@@ -606,8 +606,8 @@ endpackage
 `SV_TEST(test_sv_enum_extended_in_another_package_without_changing_the_original)
     first_pkg::opcode opc1 = new();
     second_pkg::opcode opc2 = new();
-    string s1[$] = opc1.get_names();
-    string s2[$] = opc2.get_names();
+    string s1[$] = opc1.names();
+    string s2[$] = opc2.names();
     `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
 
     // Same name for "sub", but it's really a different one in a different package
@@ -655,8 +655,8 @@ endpackage
 `SV_TEST(test_sv_enum_extended_in_the_same_package_without_changing_the_original)
     one_single_pkg::opcode good = new();
     one_single_pkg::bad_opcode bad = new();
-    string s1[$] = good.get_names();
-    string s2[$] = bad.get_names();
+    string s1[$] = good.names();
+    string s2[$] = bad.names();
     `ASSERT_AP_EQ_STR(s1, "'{\"add\", \"sub\"}")
     `ASSERT_AP_EQ_STR(s2, "'{\"bad_add\", \"bad_sub\", \"third_op\"}")
 
