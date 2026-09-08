@@ -29,12 +29,12 @@ import sv_enum_obj_pkg::*;
 
 // Define an object-based enum for testing
 `DECL_SV_ENUM_OBJ(color, bit[2:0])
-`DECL_SV_ENUM_OBJ_INST(color, red) // 0
-`DECL_SV_ENUM_OBJ_INST(color, green) // 1
-`DECL_SV_ENUM_OBJ_INST(color, blue) // 2
-`DECL_SV_ENUM_OBJ_INST(color, purple) // 3
-`DECL_SV_ENUM_OBJ_INST(color, violet, 3) // Test overriding a value
-`DECL_SV_ENUM_OBJ_INST(color, indigo, 3) // Test double-overriding a value
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, red) // 0
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, green) // 1
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, blue) // 2
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, purple) // 3
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, violet, 3) // Test overriding a value
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, indigo, 3) // Test double-overriding a value
 
 
 `SV_TEST(test_sv_enum_static_methods)
@@ -275,17 +275,17 @@ endclass
     endfunction
 `DECL_SV_ENUM_OBJ_END
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(op, add)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, add)
     virtual function int calc(int a, int b);
         return a + b;
     endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(op, sub)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, sub)
     virtual function int calc(int a, int b);
         return a - b;
     endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
 
 
@@ -326,9 +326,9 @@ endclass
 
 // Test enum without a zero value
 `DECL_SV_ENUM_OBJ(animal)
-`DECL_SV_ENUM_OBJ_INST(animal, fox, 9)
-`DECL_SV_ENUM_OBJ_INST(animal, cat, 1000)
-`DECL_SV_ENUM_OBJ_INST(animal, horse, 99)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(animal, fox, 9)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(animal, cat, 1000)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(animal, horse, 99)
 `SV_TEST(test_sv_enum_no_zero_value)
     animal pet = new();
     // TEST IS NOT SETTING (OR RANDOMIZING) 'pet.value' ON PURPOSE TO TEST THE
@@ -383,10 +383,10 @@ endclass
 
 // Test next_unused_value() with all values used except a gap in the middle.
 `DECL_SV_ENUM_OBJ(value_gap_enum, reg[1:0])
-`DECL_SV_ENUM_OBJ_INST(value_gap_enum, value_zero, 0)
-// `DECL_SV_ENUM_OBJ_INST(value_gap_enum, value_one, 1) // 1 is missing
-`DECL_SV_ENUM_OBJ_INST(value_gap_enum, value_two, 2)
-`DECL_SV_ENUM_OBJ_INST(value_gap_enum, value_three, 3)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(value_gap_enum, value_zero, 0)
+// `DECL_SV_ENUM_OBJ_ENUMERATOR(value_gap_enum, value_one, 1) // 1 is missing
+`DECL_SV_ENUM_OBJ_ENUMERATOR(value_gap_enum, value_two, 2)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(value_gap_enum, value_three, 3)
 `SV_TEST(test_sv_enum_next_unused_value)
     value_gap_enum e = new();
     `ASSERT_EQ(e.next_unused_value(), 1)
@@ -435,20 +435,20 @@ package original_pkg;
     `DECL_SV_ENUM_OBJ_END
 
 
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, bird, 4'b0000)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, bird, 4'b0000)
         virtual function int get_num_legs(); return 2; endfunction
         virtual function bit can_ride(); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, horse, 4'b0001)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, horse, 4'b0001)
         virtual function int get_num_legs(); return 4; endfunction
         virtual function bit can_ride(); return 1; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, dog, 4'b0010)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, dog, 4'b0010)
         virtual function int get_num_legs(); return 4; endfunction
         virtual function bit can_ride(); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
     // Implement some functionality in the original package that uses the enum.
     function automatic string explain_all_animals();
@@ -483,22 +483,22 @@ package subsequent_pkg;
     // THIS TECHNIQUE IS A LAST-RESORT.
 
     // Add new animals from another package
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, deer, 4'b0011)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, deer, 4'b0011)
         virtual function int get_num_legs(); return 4; endfunction
         virtual function bit can_ride(); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, elephant, 4'b0100)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, elephant, 4'b0100)
         virtual function int get_num_legs(); return 4; endfunction
         virtual function bit can_ride(); return 1; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
     // Override an animal from another package.
     // Reduce the number of legs on the dog. Sorry pooch.
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(animal, maimed_dog, 4'b0010)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, maimed_dog, 4'b0010)
         virtual function int get_num_legs(); return 3; endfunction
         virtual function bit can_ride(); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 endpackage
 
 `SV_TEST(test_sv_enum_packaged_and_extended_animals)
@@ -583,24 +583,24 @@ package first_pkg;
             return _obj.calc(a, b);
         endfunction
     `DECL_SV_ENUM_OBJ_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, add)
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, sub)
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 endpackage
 
 package second_pkg;
     // This is object-oriented inheritance and should be preferred over
     // the monkey-patching approach.
     `DECL_SV_ENUM_OBJ_EXTEND(opcode, first_pkg::opcode)
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, shift_left)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, shift_left)
         virtual function int calc(int a, int b); return a << b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub, first_pkg::sub::value())
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, sub, first_pkg::sub::value())
         virtual function int calc(int a, int b); return (a > b) ? (a - b) : (b - a); endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 endpackage
 
 `SV_TEST(test_sv_enum_extended_in_another_package_without_changing_the_original)
@@ -633,23 +633,23 @@ package one_single_pkg;
             return _obj.calc(a, b);
         endfunction
     `DECL_SV_ENUM_OBJ_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, add)
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, sub)
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
     `DECL_SV_ENUM_OBJ_EXTEND(bad_opcode, opcode)
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_add, add::value())
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, bad_add, add::value())
         virtual function int calc(int a, int b); return a - b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_sub, sub::value())
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, bad_sub, sub::value())
         virtual function int calc(int a, int b); return a + b; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, third_op)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, third_op)
         virtual function int calc(int a, int b); return 0; endfunction
-    `DECL_SV_ENUM_OBJ_INST_END
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 endpackage
 
 `SV_TEST(test_sv_enum_extended_in_the_same_package_without_changing_the_original)
@@ -727,13 +727,13 @@ endpackage
 
 
 `DECL_SV_ENUM_OBJ(four_value_enum, reg[3:0])
-`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_0x, 3'b00x)
-`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_1x, 3'b01x)
-`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_xx, 3'b0xx)
-`DECL_SV_ENUM_OBJ_INST(four_value_enum, enum_value_zx, 3'b0zx)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_value_enum, enum_value_0x, 3'b00x)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_value_enum, enum_value_1x, 3'b01x)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_value_enum, enum_value_xx, 3'b0xx)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_value_enum, enum_value_zx, 3'b0zx)
 
 `DECL_SV_ENUM_OBJ_EXTEND(ext_four_value_enum, four_value_enum)
-`DECL_SV_ENUM_OBJ_INST(ext_four_value_enum, enum_value_zzz, 3'bzzz)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(ext_four_value_enum, enum_value_zzz, 3'bzzz)
 
 `SV_TEST(test_sv_enum_four_value)
     four_value_enum e = new();
@@ -888,11 +888,11 @@ endpackage
 
 
 `DECL_SV_ENUM_OBJ(enum_foo)
-`DECL_SV_ENUM_OBJ_INST(enum_foo, foo_a, 1)
-`DECL_SV_ENUM_OBJ_INST(enum_foo, foo_a_override, 1)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(enum_foo, foo_a, 1)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(enum_foo, foo_a_override, 1)
 
 `DECL_SV_ENUM_OBJ_EXTEND(ext_enum_foo, enum_foo)
-// `DECL_SV_ENUM_OBJ_INST(enum_foo, foo_b, 1) // $fatal's after ext_enum_foo
+// `DECL_SV_ENUM_OBJ_ENUMERATOR(enum_foo, foo_b, 1) // $fatal's after ext_enum_foo
 
 `SV_TEST(test_sv_enum_extend_after_override)
     ext_enum_foo f = new();
@@ -906,10 +906,10 @@ endpackage
 
 
 `DECL_SV_ENUM_OBJ(four_val_multiple_override_enum, logic)
-`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X, 1'bX)
-`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X2, 1'bX)
-`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X3, 1'bX)
-`DECL_SV_ENUM_OBJ_INST(four_val_multiple_override_enum, four_val_multiple_override_X4, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_multiple_override_enum, four_val_multiple_override_X, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_multiple_override_enum, four_val_multiple_override_X2, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_multiple_override_enum, four_val_multiple_override_X3, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_multiple_override_enum, four_val_multiple_override_X4, 1'bX)
 
 `SV_TEST(test_sv_enum_four_val_multiple_override)
     four_val_multiple_override_enum x = new();
@@ -925,12 +925,12 @@ endpackage
 
 
 `DECL_SV_ENUM_OBJ(four_val_rand_enum, logic)
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_EXX, 1'bX)
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZEE, 1'bZ)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_rand_enum, four_val_rand_enum_EXX, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_rand_enum, four_val_rand_enum_ZEE, 1'bZ)
 // Now let ONE and ZERO take values from next_unused_value(), which will also
 // test min_value() and max_value() while 4-state unknown values are in play.
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ZERO)
-`DECL_SV_ENUM_OBJ_INST(four_val_rand_enum, four_val_rand_enum_ONE)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_rand_enum, four_val_rand_enum_ZERO)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val_rand_enum, four_val_rand_enum_ONE)
 
 
 `SV_TEST(test_sv_enum_four_val_rand)

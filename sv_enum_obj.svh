@@ -237,17 +237,17 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     //         endfunction
     //     `DECL_SV_ENUM_OBJ_END
     //
-    //     `DECL_SV_ENUM_OBJ_INST_BEGIN(op, add)
+    //     `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, add)
     //         virtual function int calc(int a, int b);
     //             return a + b;
     //         endfunction
-    //     `DECL_SV_ENUM_OBJ_INST_END
+    //     `DECL_SV_ENUM_OBJ_ENUMERATOR_END
     //
-    //     `DECL_SV_ENUM_OBJ_INST_BEGIN(op, sub)
+    //     `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, sub)
     //         virtual function int calc(int a, int b);
     //             return a - b;
     //         endfunction
-    //     `DECL_SV_ENUM_OBJ_INST_END
+    //     `DECL_SV_ENUM_OBJ_ENUMERATOR_END
     //
     // The implementation of _init_obj() is handled for you by the macros.
     // The implementation resolves a new singleton '_obj' after 'value' is

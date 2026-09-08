@@ -196,7 +196,7 @@
 //       endfunction
 //   `DECL_SV_ENUM_OBJ_END
 //
-// Then implement `calc` on each `DECL_SV_ENUM_OBJ_INST_BEGIN` class.
+// Then implement `calc` on each `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN` class.
 // =============================================================================
 `define DECL_SV_ENUM_OBJ_BEGIN(ENUM_OBJ_TYPE, SCALAR_TYPE=int) \
     \
@@ -247,10 +247,10 @@
     `DECL_SV_ENUM_OBJ_END
 
 // =============================================================================
-// DECL_SV_ENUM_OBJ_INST_BEGIN / END  — one enumerator (singleton class)
+// DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN / END  — one enumerator (singleton class)
 //
-//   `DECL_SV_ENUM_OBJ_INST(color, red)        // encoding = next_unused_value()
-//   `DECL_SV_ENUM_OBJ_INST(color, violet, 3)  // explicit encoding
+//   `DECL_SV_ENUM_OBJ_ENUMERATOR(color, red)        // encoding = next_unused_value()
+//   `DECL_SV_ENUM_OBJ_ENUMERATOR(color, violet, 3)  // explicit encoding
 //
 // Declare INST macros *after* the matching DECL_SV_ENUM_OBJ[_BEGIN].
 // Registration order is declaration order (static initializers).
@@ -265,7 +265,7 @@
 //
 // Do not `new()`, `randomize()`, or `set_*()` a singleton. Use `ENUM::get()`.
 // =============================================================================
-`define DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
+`define DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
     \
     class ENUM extends ENUM_OBJ_TYPE; \
         \
@@ -487,12 +487,12 @@
             return -1; \
         endfunction \
 
-`define DECL_SV_ENUM_OBJ_INST_END \
+`define DECL_SV_ENUM_OBJ_ENUMERATOR_END \
     endclass
 
-`define DECL_SV_ENUM_OBJ_INST(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
-    `DECL_SV_ENUM_OBJ_INST_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE) \
-    `DECL_SV_ENUM_OBJ_INST_END
+`define DECL_SV_ENUM_OBJ_ENUMERATOR(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE=_next_unused_value()) \
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(ENUM_OBJ_TYPE, ENUM, ENUM_VALUE) \
+    `DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
 
 // =============================================================================
@@ -502,10 +502,10 @@
 // BASE is left unchanged.
 //
 //   `DECL_SV_ENUM_OBJ(animal)
-//   `DECL_SV_ENUM_OBJ_INST(animal, dog)
+//   `DECL_SV_ENUM_OBJ_ENUMERATOR(animal, dog)
 //
 //   `DECL_SV_ENUM_OBJ_EXTEND(my_animal, animal)
-//   `DECL_SV_ENUM_OBJ_INST(my_animal, cat)
+//   `DECL_SV_ENUM_OBJ_ENUMERATOR(my_animal, cat)
 //
 // In the above example:
 //  * animal contains only dog.

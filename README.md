@@ -102,14 +102,14 @@ write
 import sv_enum_obj_pkg::*;
 
 `DECL_SV_ENUM_OBJ(color)
-`DECL_SV_ENUM_OBJ_INST(color, red)
-`DECL_SV_ENUM_OBJ_INST(color, green)
-`DECL_SV_ENUM_OBJ_INST(color, blue)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, red)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, green)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(color, blue)
 ```
 The line `` `DECL_SV_ENUM_OBJ(color)`` will declare the following classes:
 - `class color extends sv_enum_obj#(int);` - The base class for the enumerated type, which can also be instantiated as a wrapper/holder class for randomization purposes. (The scalar value type defaults `int` when left unspecified.) When used as a randomization wrapper class for itself, it contains both the scalar `value` (as `rand`) and a private internally managed handle to the singleton object representation associated with the `value`. A randomization wrapper is needed because SystemVerilog's randomization engine only works on built-in types and it cannot create a class instance, nor can constraints be written to do so.
 
-The line `` `DECL_SV_ENUM_OBJ_INST(color, blue)`` will declare the following class:
+The line `` `DECL_SV_ENUM_OBJ_ENUMERATOR(color, blue)`` will declare the following class:
 - `class blue extends color;` - Represents the `blue` enumerator and has a scalar value of `2` (`red` was `0` and `green` was `1`) that can be retrieved with the `get_value()` method or the `blue::value()` static method.
 
 The `red`, `green`, and `blue` enumerators are singleton classes that may be used directly. They are immutable and a fatal will result from attempting to change them or `new()` them (use `::get()` instead). Where randomization is required, the `color` wrapper/holder class should be created with `new()`, after which `.randomize()` may be called and the `value` member referenced from constraints.  The `color` class may also be used as a handle to any of the immutable singleton enumerators.  You may use the `is_holder()` and `is_singleton()` methods to determine what is being pointed to by the handle and avoid triggering a fatal error.
@@ -157,13 +157,13 @@ Factory overrides are possible for any new base/wrapper object derived from `col
 ```
 // NOTE: Import/include order is important.
 // Use `DECL_SV_ENUM_OBJ_EXTEND(my_extended_color, color) *after* all
-// `DECL_SV_ENUM_OBJ_INST(color, ???) declarations.  Trying declare another
+// `DECL_SV_ENUM_OBJ_ENUMERATOR(color, ???) declarations.  Trying declare another
 // member of color after extending it will result in a $fatal in order to
 // protect against the extended type missing members of the parent.
 `DECL_SV_ENUM_OBJ_EXTEND(my_extended_color, color)
-`DECL_SV_ENUM_OBJ_INST(my_extended_color, magenta)
-`DECL_SV_ENUM_OBJ_INST(my_extended_color, turquoise)
-`DECL_SV_ENUM_OBJ_INST(my_extended_color, periwinkle)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(my_extended_color, magenta)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(my_extended_color, turquoise)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(my_extended_color, periwinkle)
 ...
 set_type_override_by_type(color::get_type(), my_extended_color::get_type())
 ...
@@ -189,10 +189,10 @@ typedef enum logic {
 write
 ```
 `DECL_SV_ENUM_OBJ(four_val, logic)
-`DECL_SV_ENUM_OBJ_INST(four_val, ZERO, 1'b0)
-`DECL_SV_ENUM_OBJ_INST(four_val, ONE, 1'b1)
-`DECL_SV_ENUM_OBJ_INST(four_val, EXX, 1'bX)
-`DECL_SV_ENUM_OBJ_INST(four_val, ZEE, 1'bZ)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val, ZERO, 1'b0)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val, ONE, 1'b1)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val, EXX, 1'bX)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(four_val, ZEE, 1'bZ)
 ```
 _(Note that if all values have an unknown in them, then max_value() and min_value() will $fatal because no max or min can be determined.)_
 
@@ -315,18 +315,18 @@ color a = new();
 color b = new();
 color c = new();
 
-a.set(green::get());
-b.set(green::get());
-c.set(blue::get());
+a.set(green::get()); // a is holding a mutable wrapper object holding green
+b.set(green::get()); // b is holding a mutable wrapper object holding green
+c.set(blue::get()); // c is holding a mutable wrapper object holding blue
 
 assert(a.is(b));
 assert(!a.is(c));
 ```
 or
 ```
-color a = green::get();
-color b = green::get();
-color c = blue::get();
+color a = green::get(); // a is pointing to the green immutable singleton
+color b = green::get(); // b is pointing to the green immutable singleton
+color c = blue::get(); // c is pointing to the blue immutable singleton
 
 assert(a.is(b));
 assert(!a.is(c));
@@ -508,26 +508,26 @@ write
 `DECL_SV_ENUM_OBJ_END
 
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, bird, 4'b0000)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, bird, 4'b0000)
     virtual function int get_num_legs(); return 2; endfunction
     virtual function bit can_ride(); return 0; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, horse, 4'b0001)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, horse, 4'b0001)
     virtual function int get_num_legs(); return 4; endfunction
     virtual function bit can_ride(); return 1; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, dog, 4'b0010)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, dog, 4'b0010)
     virtual function int get_num_legs(); return 4; endfunction
     virtual function bit can_ride(); return 0; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
 function automatic string explain_all_animals();
     animal a = new();
-    a.set(a.first());
+    a.set_first();
     explain_all_animals = "";
-    repeat (animal::num()) begin
+    repeat (a.num()) begin
         explain_all_animals = {explain_all_animals, "\n", explain_animal(a)};
         a.increment();
     end
@@ -546,22 +546,22 @@ To illustrate how extendable the class-based solution is, as your project grows,
 
 This illustrates the _dependency inversion principle_ (the D in SOLID). Both `explain_animal()` and the individual animals depend on the `animal` base class.
 ```
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, deer, 4'b0011)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, deer, 4'b0011)
     virtual function int get_num_legs(); return 4; endfunction
     virtual function bit can_ride(); return 0; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, elephant, 4'b0100)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, elephant, 4'b0100)
     virtual function int get_num_legs(); return 4; endfunction
     virtual function bit can_ride(); return 1; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 ```
 Even existing enumerator singletons can be overridden with polymorphism and the sv_enum_obj's built-in registry. By simply declaring them with the same value, they replace the previously declared/registered enumerator:
 ```
-`DECL_SV_ENUM_OBJ_INST_BEGIN(animal, maimed_dog, 4'b0010)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(animal, maimed_dog, 4'b0010)
     virtual function int get_num_legs(); return 3; endfunction
     virtual function bit can_ride(); return 0; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 ```
 
 _Note that the UVM Factory cannot be used to override individual enumerator singletons. Use the above technique instead._
@@ -572,7 +572,7 @@ Be careful how you extend code from another package.  The macros easily allow "m
 ```
 package original_pkg;
     `DECL_SV_ENUM_OBJ(color)
-    `DECL_SV_ENUM_OBJ_INST(color, red)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR(color, red)
 endpackage
 ...
 package later_pkg;
@@ -580,7 +580,7 @@ package later_pkg;
     // other code referencing/using the enumeration in the original_pkg.
     // This is unexpected!
     // AVOID THIS!!! LAST RESORT ONLY!!!
-    `DECL_SV_ENUM_OBJ_INST(original_pkg::color, blue)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR(original_pkg::color, blue)
 endpackage
 
 // Note that some simulators may require the patching package to be referenced/
@@ -592,12 +592,16 @@ Avoid monkey-patching by using the 'O' (Open-Closed Principle) in SOLID.  Extend
 ```
 package original_pkg;
     `DECL_SV_ENUM_OBJ(color)
-    `DECL_SV_ENUM_OBJ_INST(color, red)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR(color, red)
 endpackage
 ...
 package later_pkg;
+    // Good! Much safer than monkey-patching, but you may need a builder
+    // design pattern or factory design pattern (such as the UVM Factory) to
+    // "insert" your new type back into existing code/projects without
+    // monkey-patching.
     `DECL_SV_ENUM_OBJ_EXTEND(extended_color, original_pkg::color)
-    `DECL_SV_ENUM_OBJ_INST(extended_color, blue)
+    `DECL_SV_ENUM_OBJ_ENUMERATOR(extended_color, blue)
 endpackage
 ```
 In the above example `red` stays a child of `color` and `color` has no references to the new `blue` color.  `extended_color` picks up `red` from its parent `color` and then `blue` is added to it.  (Note that `blue` is a child of `extended_color`, but `red` remains a child of `color`.)
@@ -611,7 +615,7 @@ Users of UVM can go ahead and use UVM's factory, which should already be familia
 set_type_override_by_type(original_pkg::color::get_type(),
                           later_pkg::extended_color::get_type());
 ```
-_Note that the UVM Factory cannot be used to override individual enumerator singletons. Instead use DECL_SV_ENUM_OBJ_INST to declare a new enumerator, but specify the `value` of the enumerator you wish to override._
+_Note that the UVM Factory cannot be used to override individual enumerator singletons. Instead use DECL_SV_ENUM_OBJ_ENUMERATOR to declare a new enumerator, but specify the `value` of the enumerator you wish to override._
 
 ---
 ### Indexing Into an Associative Array

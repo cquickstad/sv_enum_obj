@@ -35,24 +35,24 @@ import sv_enum_obj_pkg::*;
         return _obj.calc(a, b);
     endfunction
 `DECL_SV_ENUM_OBJ_END
-`DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, add)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, add)
     virtual function int calc(int a, int b); return a + b; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
-`DECL_SV_ENUM_OBJ_INST_BEGIN(opcode, sub)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(opcode, sub)
     virtual function int calc(int a, int b); return a - b; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
 
 `DECL_SV_ENUM_OBJ_EXTEND(bad_opcode, opcode)
-`DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_add, add::value())
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, bad_add, add::value())
     virtual function int calc(int a, int b); return a - b; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
-`DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, bad_sub, sub::value())
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, bad_sub, sub::value())
     virtual function int calc(int a, int b); return a + b; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
-`DECL_SV_ENUM_OBJ_INST_BEGIN(bad_opcode, third_op)
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(bad_opcode, third_op)
     virtual function int calc(int a, int b); return 0; endfunction
-`DECL_SV_ENUM_OBJ_INST_END
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
 
 
 `RUN_PHASE_TEST(test_factory_override_of_holder_object)
@@ -87,11 +87,11 @@ import sv_enum_obj_pkg::*;
 
 
 `DECL_SV_ENUM_OBJ(uvm_color)
-`DECL_SV_ENUM_OBJ_INST(uvm_color, red)
-`DECL_SV_ENUM_OBJ_INST(uvm_color, green)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(uvm_color, red)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(uvm_color, green)
 
 `DECL_SV_ENUM_OBJ_EXTEND(ext_uvm_color, uvm_color)
-`DECL_SV_ENUM_OBJ_INST(ext_uvm_color, blue)
+`DECL_SV_ENUM_OBJ_ENUMERATOR(ext_uvm_color, blue)
 
 `RUN_PHASE_TEST(test_uvm_override_and_increment_decrement)
     uvm_color c;
