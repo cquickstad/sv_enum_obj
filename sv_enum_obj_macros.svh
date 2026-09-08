@@ -160,12 +160,10 @@
             return get_by_value(_values[_values.size() - 1]); \
         endfunction \
         virtual function bit is_first(); \
-            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
-            return get_value() === _values[0]; \
+            return is(first()); \
         endfunction \
         virtual function bit is_last(); \
-            if (_values.size() == 0) $fatal(1, "Unexpected: empty enum"); \
-            return get_value() === _values[_values.size() - 1]; \
+            return is(last()); \
         endfunction \
         \
         // NOTE: randomization cannot work with X/Z. \
