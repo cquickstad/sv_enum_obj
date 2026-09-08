@@ -282,6 +282,9 @@ color c = color::get_by_value(2); // c is pointing to the blue immutable singlet
 ### Converting a String to the Enumeration
 Instead of
 ```
+// Did you know that UVM has a helper to turn string back
+// into SV native enums?  This feature is missing from the
+// SystemVerilog langue.
 color c;
 bit success = uvm_enum_wrapper#(color)::from_name("blue", c);
 ```
