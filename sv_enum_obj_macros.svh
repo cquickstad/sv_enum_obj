@@ -236,7 +236,7 @@
         virtual function sv_enum_obj_base get_singleton(); _init_obj(); return _obj.get_singleton(); endfunction \
         virtual function string name(); _init_obj(); return _obj.name(); endfunction \
         virtual function string base_name(); _init_obj(); return _obj.base_name(); endfunction \
-        virtual function string get_full_name(); _init_obj(); return _obj.get_full_name(); endfunction \
+        virtual function string full_name(); _init_obj(); return _obj.full_name(); endfunction \
         virtual function SCALAR_T get_value(); _init_obj(); return _obj.get_value(); endfunction \
         virtual function void increment(); \
             set(next()); \
@@ -308,7 +308,7 @@
                         "name (", _base_name, ".", _name, ", handle=", \
                         $sformatf("%0x", _singleton), ") matched another ", \
                         "enumerator's name (", \
-                        _registry_name[_name].get_full_name(), ", handle=", \
+                        _registry_name[_name].full_name(), ", handle=", \
                         $sformatf("%0x", _registry_name[_name]), \
                         "). This is allowable because the values match ", \
                         "(value=", $sformatf("%p", _value), "). ", \
@@ -321,7 +321,7 @@
                         $sformatf("%0x", _singleton), ", value=", \
                         $sformatf("%p", _value), ") matched another ", \
                         "enumerator's name (", \
-                        _registry_name[_name].get_full_name(), ", handle=", \
+                        _registry_name[_name].full_name(), ", handle=", \
                         $sformatf("%0x", _registry_name[_name]), \
                         ", value=", \
                         $sformatf("%p", _registry_name[_name].get_value()), \
@@ -371,7 +371,7 @@
             super.new( `ifdef UVM_POST_VERSION_1_1 _name `endif ); \
             if ((_singleton != null) && (this != _singleton)) begin \
                 `ifdef INCA $stacktrace; `endif \
-                $fatal(1, {"SV ENUM OBJECT FATAL: ", get_full_name(), \
+                $fatal(1, {"SV ENUM OBJECT FATAL: ", full_name(), \
                     ": Attempted to create more than one singleton. Call '", \
                     _name, "::get()' or '", _base_name, \
                     "::get_by_value(<value>)' instead."}); \
@@ -385,7 +385,7 @@
         function void pre_randomize(); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: Singleton enum-object ", \
-                get_full_name(), " must not be randomized because its ", \
+                full_name(), " must not be randomized because its ", \
                 "value cannot change!  Perhaps you intended ", \
                 "to call randomize() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -394,7 +394,7 @@
         virtual function void set_by_value(SCALAR_T v); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_value() must not be ", \
-                "called on singleton enum-object ", get_full_name(), \
+                "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
                 "to call set_by_name() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -403,7 +403,7 @@
         virtual function void set(enum_obj_t rhs); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set() must not be ", \
-                "called on singleton enum-object ", get_full_name(), \
+                "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
                 "to call set() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -412,7 +412,7 @@
         virtual function void set_by_name(string n); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_name() must not be ", \
-                "called on singleton enum-object ", get_full_name(), \
+                "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
                 "to call set_by_name() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -421,7 +421,7 @@
         virtual function void increment(); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: increment() must not be ", \
-                "called on singleton enum-object ", get_full_name(), \
+                "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
                 "to call increment() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -430,7 +430,7 @@
         virtual function void decrement(); \
             `ifdef INCA $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: decrement() must not be ", \
-                "called on singleton enum-object ", get_full_name(), \
+                "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
                 "to call decrement() on the parent '", _base_name, \
                 "' type of object instead."}); \
@@ -447,7 +447,7 @@
         virtual function string base_name(); \
             return _base_name; \
         endfunction \
-        virtual function string get_full_name(); \
+        virtual function string full_name(); \
             return _full_name; \
         endfunction \
         virtual function SCALAR_T get_value(); \

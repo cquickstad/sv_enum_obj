@@ -108,7 +108,7 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     pure virtual function int get_num();
 
     // "Type.enumerator", e.g. "color.red". Follows override to the final name.
-    pure virtual function string get_full_name();
+    pure virtual function string full_name();
 
     // Returns the static cast of the current value to int.
     // Fatals on X/Z or if SCALAR_T is wider than int.
@@ -211,13 +211,13 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
         SCALAR_T tmp = get_value();
         if ($isunknown(tmp)) begin
             $fatal(1, {"SV ENUM OBJECT FATAL: get_int_value() must not be ",
-                "called on ", get_full_name(), " because the value (",
+                "called on ", full_name(), " because the value (",
                 $sformatf("'b%0b", tmp), ") contains unknown (X/Z) values ",
                 "that cannot be represented by an 'int' type."});
         end
         if ($bits(SCALAR_T) > $bits(int)) begin
             $fatal(1, {"SV ENUM OBJECT FATAL: get_int_value() must not be ",
-                "called on ", get_full_name(), " because the value type ",
+                "called on ", full_name(), " because the value type ",
                 "requires more bits (",
                 $sformatf("%0d", $bits(SCALAR_T)), ") than can be ",
                 "stored in an 'int' (",
