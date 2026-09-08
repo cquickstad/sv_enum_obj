@@ -641,6 +641,7 @@ You may find that you want to write a constraint that references the methods of 
 * "Function calls in passive constraints are executed an unspecified number of times (at least once) in an unspecified order."
 
 Therefore, you cannot write a constraint that creates the correct child type of the enumerated object, then references the methods of the enumerated type object.
+
 For example, you might want to write a constraint like this:
 ```
 class item extends uvm_object;
