@@ -235,7 +235,7 @@
         \
         virtual function sv_enum_obj_base get_singleton(); _init_obj(); return _obj.get_singleton(); endfunction \
         virtual function string name(); _init_obj(); return _obj.name(); endfunction \
-        virtual function string get_enum_type_name(); _init_obj(); return _obj.get_enum_type_name(); endfunction \
+        virtual function string base_name(); _init_obj(); return _obj.base_name(); endfunction \
         virtual function string get_full_name(); _init_obj(); return _obj.get_full_name(); endfunction \
         virtual function SCALAR_T get_value(); _init_obj(); return _obj.get_value(); endfunction \
         virtual function void increment(); \
@@ -431,7 +431,7 @@
         virtual function string name(); \
             return _name; \
         endfunction \
-        virtual function string get_enum_type_name(); \
+        virtual function string base_name(); \
             return _base_name; \
         endfunction \
         virtual function string get_full_name(); \

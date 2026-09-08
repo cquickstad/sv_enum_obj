@@ -79,7 +79,7 @@ virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `e
     pure virtual function sv_enum_obj_base get_singleton();
     pure virtual function string name();
     pure virtual function _string_q get_names();
-    pure virtual function string get_enum_type_name();
+    pure virtual function string base_name();
 
     // Set the value held by this holder to the enumerator referenced by the
     // indicated name.  If an overridden name is supplied, then the new
