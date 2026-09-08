@@ -194,10 +194,10 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     pure virtual function _scalar_t_q get_values();
 
     // Returns the largest value of all of the registered enumerations
-    pure virtual function SCALAR_T get_max_value();
+    pure virtual function SCALAR_T max_value();
 
     // Returns the least value of all of the registered enumerations
-    pure virtual function SCALAR_T get_min_value();
+    pure virtual function SCALAR_T min_value();
 
     // Returns the value that the next registered value will take should
     // enumerator be added.  If no enumerators are registered, then the value

@@ -119,8 +119,8 @@
         endfunction \
         virtual function _string_q get_names(); return _names; endfunction \
         virtual function _scalar_t_q get_values(); return _values; endfunction \
-        virtual function SCALAR_T get_max_value(); return _max_value(); endfunction \
-        virtual function SCALAR_T get_min_value(); return _min_value(); endfunction \
+        virtual function SCALAR_T max_value(); return _max_value(); endfunction \
+        virtual function SCALAR_T min_value(); return _min_value(); endfunction \
         virtual function SCALAR_T get_next_unused_value(); return _next_unused_value(); endfunction \
         virtual function int num(); return _values.size(); endfunction \
         virtual function enum_obj_t next(); \
@@ -173,7 +173,7 @@
         \
         // Only the ENUM_OBJ_TYPE is used as a wrapper for randomization.  The \
         // children must not call _initialize_value() because they are \
-        // created before get_min_value() can be called (before anything is in \
+        // created before min_value() can be called (before anything is in \
         // _values). \
         protected virtual function void _initialize_value(); \
             if (_values.size() > 0) begin \
@@ -461,16 +461,16 @@
                 "instead."}); \
             return {}; \
         endfunction \
-        virtual function SCALAR_T get_max_value(); \
+        virtual function SCALAR_T max_value(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
-                "Avoid calling get_max_value() on the singleton ", \
+                "Avoid calling max_value() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return '0; \
         endfunction \
-        virtual function SCALAR_T get_min_value(); \
+        virtual function SCALAR_T min_value(); \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", \
-                "Avoid calling get_min_value() on the singleton ", \
+                "Avoid calling min_value() on the singleton ", \
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return '0; \

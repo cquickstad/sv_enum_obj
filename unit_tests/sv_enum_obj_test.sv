@@ -168,8 +168,8 @@ import sv_enum_obj_pkg::*;
 
 `SV_TEST(test_sv_enum_helpers)
     color c = new();
-    `ASSERT_EQ(c.get_max_value(), 3)
-    `ASSERT_EQ(c.get_min_value(), 0)
+    `ASSERT_EQ(c.max_value(), 3)
+    `ASSERT_EQ(c.min_value(), 0)
     `ASSERT_EQ(c.get_next_unused_value(), 4)
     `ASSERT_AP_EQ_STR(c.get_values(), "'{'h0, 'h1, 'h2, 'h3}")
     `ASSERT_AP_EQ_STR(c.get_names(), "'{\"red\", \"green\", \"blue\", \"indigo\"}")
@@ -311,14 +311,14 @@ endclass
     my_op.value = 0;
     `ASSERT_EQ(my_op.get_value(), 0)
     `ASSERT_STR_EQ(my_op.full_name(), "op.add")
-    `ASSERT_EQ(my_op.get_min_value(), 0)
-    `ASSERT_EQ(my_op.get_max_value(), 1)
+    `ASSERT_EQ(my_op.min_value(), 0)
+    `ASSERT_EQ(my_op.max_value(), 1)
     `ASSERT_EQ(my_op.get_next_unused_value(), 2)
     my_op.value = 1;
     `ASSERT_EQ(my_op.get_value(), 1)
     `ASSERT_STR_EQ(my_op.full_name(), "op.sub")
-    `ASSERT_EQ(my_op.get_min_value(), 0)
-    `ASSERT_EQ(my_op.get_max_value(), 1)
+    `ASSERT_EQ(my_op.min_value(), 0)
+    `ASSERT_EQ(my_op.max_value(), 1)
     `ASSERT_EQ(my_op.get_next_unused_value(), 2)
 `END_SV_TEST
 
@@ -335,8 +335,8 @@ endclass
     // INITIAL VALUE OF 'value'.
     `ASSERT_EQ(pet.get_value(), 9)
     `ASSERT_STR_EQ(pet.full_name(), "animal.fox")
-    `ASSERT_EQ(pet.get_min_value(), 9)
-    `ASSERT_EQ(pet.get_max_value(), 1000)
+    `ASSERT_EQ(pet.min_value(), 9)
+    `ASSERT_EQ(pet.max_value(), 1000)
     `ASSERT_EQ(pet.get_next_unused_value(), 10)
 `END_SV_TEST
 
@@ -677,7 +677,7 @@ endpackage
 
     `ASSERT_AP_EQ_STR(bad.get_values(), "'{0, 1, 2}")
     `ASSERT_EQ(bad.num(), 3)
-    `ASSERT_EQ(bad.get_max_value(), 2)
+    `ASSERT_EQ(bad.max_value(), 2)
     `ASSERT_EQ(bad.get_next_unused_value(), 3)
 
     `ASSERT_TRUE(bad.randomize() with {value == 2;})
