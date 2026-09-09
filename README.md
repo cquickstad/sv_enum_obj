@@ -289,7 +289,7 @@ Instead of
 ```
 // Did you know that UVM has a helper to turn string back
 // into SV native enums?  This feature is missing from the
-// SystemVerilog langue.
+// SystemVerilog language.
 color c;
 bit success = uvm_enum_wrapper#(color)::from_name("blue", c);
 ```
