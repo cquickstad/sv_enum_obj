@@ -253,7 +253,7 @@ int i = int'(c);
 ```
 write
 ```
-color c = new();
+color c = new(); // Mutable holder
 c.set_by_value(blue::value());
 int i = c.get_value();
 ```
