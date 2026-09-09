@@ -148,6 +148,8 @@ bit success = c.randomize(); // Good. Mutable.
 c.set_by_value(2); // Good. Mutable.
 c.set_by_name("red"); // Good. Mutable.
 c.set(green::get()); // Good. Mutable.
+c.set_first(); // Good. Mutable.
+c.advance(); // Good. Mutable.
 ```
 
 If UVM is not imported into your environment, then use `new()`, but if you are using UVM, call `create()` instead:
