@@ -53,16 +53,16 @@
         static function enum_obj_t get_by_value(SCALAR_T v); \
             get_by_value = _lookup_by_value(v); \
             if (get_by_value == null) begin \
-                `ifdef INCA $stacktrace; `endif \
+                `ifdef XCELIUM $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", \
-                    $sformatf("%0s has no enumeration for value 'h%0x",\
+                    $sformatf("%0s has no enumeration for value %p",\
                         _base_name, v)}); \
             end \
         endfunction \
         \
         static function enum_obj_t get_by_name(string n); \
             if (!_registry_name.exists(n)) begin \
-                `ifdef INCA $stacktrace; `endif \
+                `ifdef XCELIUM $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", \
                     $sformatf("%0s has no enumeration for name '%0s'",\
                         _base_name, n)}); \
@@ -77,7 +77,7 @@
         protected static function SCALAR_T _max_value(); \
             SCALAR_T q[$] = _two_value_values.max(); \
             if (q.size() > 0) return q[0]; \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".max_value: ", \
                 $sformatf("Failed to find max value for '%0s' among values %p", \
                     _base_name, _values)}); \
@@ -85,7 +85,7 @@
         protected static function SCALAR_T _min_value(); \
             SCALAR_T q[$] = _two_value_values.min(); \
             if (q.size() > 0) return q[0]; \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: ", _base_name, ".min_value: ", \
                 $sformatf("Failed to find min value for '%0s' among values %p", \
                     _base_name, _values)}); \
@@ -124,7 +124,7 @@
             SCALAR_T v = get_value(); \
             int i, qi[$] = _values.find_first_index() with (item === v); \
             if (qi.size() == 0) begin \
-                `ifdef INCA $stacktrace; `endif \
+                `ifdef XCELIUM $stacktrace; `endif \
                 $fatal(1, $sformatf("SV ENUM OBJECT FATAL: Unexpected: value %p not in values: %p", v, _values)); \
             end \
             i = qi[0] + 1; \
@@ -135,7 +135,7 @@
             SCALAR_T v = get_value(); \
             int i, qi[$] = _values.find_first_index() with (item === v); \
             if (qi.size() == 0) begin \
-                `ifdef INCA $stacktrace; `endif \
+                `ifdef XCELIUM $stacktrace; `endif \
                 $fatal(1, $sformatf("SV ENUM OBJECT FATAL: Unexpected: value %p not in values: %p", v, _values)); \
             end \
             i = qi[0] - 1; \
@@ -209,13 +209,13 @@
         \
         `_SV_ENUM_OBJ_TYPE_STATICS \
         \
-        `ifdef UVM_POST_VERSION_1_1 \
+        `ifdef SV_ENUM_OBJ_UVM \
         `uvm_object_utils_begin(ENUM_OBJ_TYPE) \
             `uvm_field_int(value, UVM_ALL_ON) \
         `uvm_object_utils_end \
         `endif \
-        function new(`ifdef UVM_POST_VERSION_1_1 string name=`"ENUM_OBJ_TYPE`" `endif); \
-            super.new(`ifdef UVM_POST_VERSION_1_1 name `endif); \
+        function new(`ifdef SV_ENUM_OBJ_UVM string name=`"ENUM_OBJ_TYPE`" `endif); \
+            super.new(`ifdef SV_ENUM_OBJ_UVM name `endif); \
         endfunction \
         \
         virtual function void set(enum_obj_t rhs); \
@@ -295,9 +295,22 @@
             _singleton = new_me; \
             if (_name inside {_names}) begin \
                 if (_value === _registry_name[_name].get_value()) begin \
+                    `ifdef VCS \
+                    $display({"SV ENUM OBJECT CAUTION: An enumerator's ", \
+                        "name (", _base_name, ".", _name, \
+                        ") matched another ", \
+                        "enumerator's name (", \
+                        _registry_name[_name].full_name(), \
+                        "). This is allowable because the values match ", \
+                        "(value=", $sformatf("%0p", _value), "). ", \
+                        "The enumerators are in different packages, ", \
+                        "because it is not possible to declare two classes ", \
+                        "of the same name in the same package."}); \
+                    `else \
                     $display({"SV ENUM OBJECT CAUTION: An enumerator's ", \
                         "name (", _base_name, ".", _name, ", handle=", \
-                        $sformatf("%0x", _singleton), ") matched another ", \
+                        $sformatf("%0x", _singleton), \
+                        ") matched another ", \
                         "enumerator's name (", \
                         _registry_name[_name].full_name(), ", handle=", \
                         $sformatf("%0x", _registry_name[_name]), \
@@ -306,20 +319,34 @@
                         "The enumerators are in different packages, ", \
                         "because it is not possible to declare two classes ", \
                         "of the same name in the same package."}); \
+                    `endif \
                 end else begin \
+                    `ifdef VCS \
                     $fatal(1, {"SV ENUM OBJECT FATAL: An enumerator's ", \
-                        "name (", _base_name, ".", _name, ", handle=", \
-                        $sformatf("%0x", _singleton), ", value=", \
-                        $sformatf("%p", _value), ") matched another ", \
+                        "name (", _base_name, ".", _name, ", value=", \
+                        $sformatf("%0p", _value), ") matched another ", \
                         "enumerator's name (", \
-                        _registry_name[_name].full_name(), ", handle=", \
-                        $sformatf("%0x", _registry_name[_name]), \
-                        ", value=", \
-                        $sformatf("%p", _registry_name[_name].get_value()), \
+                        _registry_name[_name].full_name(), ", value=", \
+                        $sformatf("%0p", _registry_name[_name].get_value()), \
                         "). This is not allowed because the values do not ", \
                         "match. Note that the enumerators are in different ", \
                         "packages, because it is not possible to declare ", \
                         "two classes of the same name in the same package."}); \
+                    `else \
+                    $fatal(1, {"SV ENUM OBJECT FATAL: An enumerator's ", \
+                        "name (", _base_name, ".", _name, ", handle=", \
+                        $sformatf("%0x", _singleton), ", value=", \
+                        $sformatf("%0p", _value), ") matched another ", \
+                        "enumerator's name (", \
+                        _registry_name[_name].full_name(), ", handle=", \
+                        $sformatf("%0x", _registry_name[_name]), \
+                        ", value=", \
+                        $sformatf("%0p", _registry_name[_name].get_value()), \
+                        "). This is not allowed because the values do not ", \
+                        "match. Note that the enumerators are in different ", \
+                        "packages, because it is not possible to declare ", \
+                        "two classes of the same name in the same package."}); \
+                    `endif \
                 end \
             end \
             e = _lookup_by_value(_value); \
@@ -331,9 +358,15 @@
                 string qs[$]; \
                 _names[qi[0]] = _name; \
                 if (_debug) begin \
+                    `ifdef VCS \
+                    $display("SV ENUM SINGLETON OVERRIDE: %0s.%0s -> %0s.%0s (value=%0p)", \
+                        _base_name, prev_name, \
+                        _base_name, _name, _value); \
+                    `else \
                     $display("SV ENUM SINGLETON OVERRIDE: %0s.%0s(handle=%0x) -> %0s.%0s(handle=%0x) (value=%p)", \
                         _base_name, prev_name, prev_enum, \
                         _base_name, _name, _singleton, _value); \
+                    `endif \
                 end \
                 // Support multiple overrides of the same value. All of the \
                 // names should alias to the last override. \
@@ -343,8 +376,13 @@
                 foreach (qs[i]) _registry_name[qs[i]] = _singleton; \
             end else begin \
                 if (_debug) begin \
-                    $display("SV ENUM SINGLETON REGISTERED: %0s.%0s(handle=%0x) (value=%p)", \
-                        _base_name, _name, _singleton, _value); \
+                    `ifdef VCS \
+                    $display("SV ENUM SINGLETON REGISTERED: %0s.%0s (value=%0p)", \
+                        _base_name, _name, _value); \
+                    `else \
+                    $display("SV ENUM SINGLETON REGISTERED: %0s.%0s (value=%p)", \
+                        _base_name, _name, _value); \
+                    `endif \
                 end \
                 _values.push_back(_value); \
                 if (!$isunknown(_value)) _two_value_values.push_back(_value); \
@@ -359,9 +397,9 @@
             return _value; \
         endfunction \
         function new(); \
-            super.new( `ifdef UVM_POST_VERSION_1_1 _name `endif ); \
+            super.new( `ifdef SV_ENUM_OBJ_UVM _name `endif ); \
             if ((_singleton != null) && (this != _singleton)) begin \
-                `ifdef INCA $stacktrace; `endif \
+                `ifdef XCELIUM $stacktrace; `endif \
                 $fatal(1, {"SV ENUM OBJECT FATAL: ", full_name(), \
                     ": Attempted to create more than one singleton. Call '", \
                     _name, "::get()' or '", _base_name, \
@@ -374,7 +412,7 @@
         virtual function bit is_singleton(); return 1; endfunction \
         \
         function void pre_randomize(); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: Singleton enum-object ", \
                 full_name(), " must not be randomized because its ", \
                 "value cannot change!  Perhaps you intended ", \
@@ -383,7 +421,7 @@
         endfunction \
         \
         virtual function void set_by_value(SCALAR_T v); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_value() must not be ", \
                 "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -392,7 +430,7 @@
         endfunction \
         \
         virtual function void set(enum_obj_t rhs); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set() must not be ", \
                 "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -401,7 +439,7 @@
         endfunction \
         \
         virtual function void set_by_name(string n); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: set_by_name() must not be ", \
                 "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -410,7 +448,7 @@
         endfunction \
         \
         virtual function void increment(); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: increment() must not be ", \
                 "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -419,7 +457,7 @@
         endfunction \
         \
         virtual function void decrement(); \
-            `ifdef INCA $stacktrace; `endif \
+            `ifdef XCELIUM $stacktrace; `endif \
             $fatal(1, {"SV ENUM OBJECT FATAL: decrement() must not be ", \
                 "called on singleton enum-object ", full_name(), \
                 " because its value cannot change!  Perhaps you intended ", \
@@ -532,7 +570,7 @@
             return _registry_name.size(); \
         endfunction \
         \
-        `ifdef UVM_POST_VERSION_1_1 \
+        `ifdef SV_ENUM_OBJ_UVM \
         `uvm_object_utils(ENUM_OBJ_TYPE) \
         function new(string name=`"ENUM_OBJ_TYPE`"); \
             super.new(name); \

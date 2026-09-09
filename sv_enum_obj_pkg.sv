@@ -28,14 +28,14 @@
 // MINOR — new macro, new method, new documented behavior
 // PATCH — bug fix, comment, test, README typo.
 //
-`define SV_ENUM_OBJ_VERSION_MAJOR 0
-`define SV_ENUM_OBJ_VERSION_MINOR 2
-`define SV_ENUM_OBJ_VERSION_PATCH 1
-`define SV_ENUM_OBJ_VERSION "0.2.1"
+`define SV_ENUM_OBJ_VERSION_MAJOR 1
+`define SV_ENUM_OBJ_VERSION_MINOR 0
+`define SV_ENUM_OBJ_VERSION_PATCH 0
+`define SV_ENUM_OBJ_VERSION "1.0.0"
 
 package sv_enum_obj_pkg;
 
-`ifdef UVM_POST_VERSION_1_1
+`ifdef SV_ENUM_OBJ_UVM
     import uvm_pkg::*;
     `include "uvm_macros.svh"
 `endif

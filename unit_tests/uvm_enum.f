@@ -17,6 +17,8 @@
 +UVM_NO_RELNOTES
 -uvmhome $UVM_UNIT_HOME/uvm_unit-uvm-1.2
 
++define+SV_ENUM_OBJ_UVM
+
 -incdir ../
 -incdir $UVM_UNIT_HOME
 -incdir $UVM_UNIT_HOME/uvm_unit-uvm-1.2/src

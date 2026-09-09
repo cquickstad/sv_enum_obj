@@ -53,9 +53,9 @@
 //------------------------------------------------------------------------------
 
 
-virtual class sv_enum_obj_base `ifdef UVM_POST_VERSION_1_1 extends uvm_object `endif ;
+virtual class sv_enum_obj_base `ifdef SV_ENUM_OBJ_UVM extends uvm_object `endif ;
 
-`ifdef UVM_POST_VERSION_1_1
+`ifdef SV_ENUM_OBJ_UVM
     function new(string name);
         super.new(name);
     endfunction
@@ -148,8 +148,8 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     // when not inside a constraint.
     rand SCALAR_T value;
 
-    function new( `ifdef UVM_POST_VERSION_1_1 string name="sv_enum_obj" `endif );
-        super.new( `ifdef UVM_POST_VERSION_1_1 name `endif );
+    function new( `ifdef SV_ENUM_OBJ_UVM string name="sv_enum_obj" `endif );
+        super.new( `ifdef SV_ENUM_OBJ_UVM name `endif );
         _initialize_value();
     endfunction
 
@@ -178,7 +178,7 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     virtual function void set_by_int(int v);
         SCALAR_T tmp = SCALAR_T'(v);
         if (int'(tmp) != v) begin
-            `ifdef INCA $stacktrace; `endif
+            `ifdef XCELIUM $stacktrace; `endif
             $fatal(1,{"SV ENUM OBJECT FATAL: ", base_name(),
                 ".set_by_int(): int value ", $sformatf("%0d", v),
                 " could not be converted to SCALAR_T."});

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0]
+### Changed
+- Macro DECL_SV_ENUM_OBJ_INST renamed to DECL_SV_ENUM_OBJ_ENUMERATOR. ("Inst" was poor terminology.)
+- UVM support given its own specific define: SV_ENUM_OBJ_UVM (This is now explicit, compatible with all modern UVM versions, and doesn't force UVM users to accept the UVM base classes.)
+- Nearly all methods renamed and many of the static methods were removed so they don't get confused with the virtual methods. (Results could be deceptive in the override case.)
+- Tested with Xcelium, Questa, and VCS
+
 ## [0.2.1]
 ### Fixed
 - README typo

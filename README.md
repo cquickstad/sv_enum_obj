@@ -80,11 +80,16 @@ overrides are compiled in.
 
 | Piece | Tested | Notes |
 |---|---|---|
-| Simulator | Cadence Xcelium (`xrun`) | v25.03-s002 |
-| UVM | UVM 1.2 |  |
-| UVM 1.1d / IEEE 1800.2-2020 / 1800.2-2023 | Not tested | APIs used are the stable `uvm_object` / factory subset; expected to work, not guaranteed |
+| Simulator | Cadence Xcelium (`xrun`) | 25.03-s002 |
+|           | Siemens Questa | 2025.2 |
+|           | Synopsys VCS | 2025.06 |
+| UVM | UVM 1.1d |  |
+|     | UVM 1.2 |  |
+|     | UVM IEEE 1800.2-2017-1.0 |  |
+|     | UVM IEEE 1800.2-2020-2.0 |  |
+|     | UVM IEEE 1800.2-2020-3.1      |  |
 
-UVM is detected with `` `ifdef UVM_POST_VERSION_1_1 ``.
+UVM support is enabled by setting `+define+SV_ENUM_OBJ_UVM`.
 
 ## How To Use
 ### Declaration
