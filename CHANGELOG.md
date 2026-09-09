@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1]
+### Fixed
+- Minor documentation fixes.
+- Minor code comment fixes.
+- Fix benign type mismatch in static assignment.
+
 ## [1.0.0]
 ### Changed
 - Macro DECL_SV_ENUM_OBJ_INST renamed to DECL_SV_ENUM_OBJ_ENUMERATOR. ("Inst" was poor terminology.)
