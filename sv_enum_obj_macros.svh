@@ -252,12 +252,12 @@
 //   `DECL_SV_ENUM_OBJ_ENUMERATOR(color, red)        // encoding = next_unused_value()
 //   `DECL_SV_ENUM_OBJ_ENUMERATOR(color, violet, 3)  // explicit encoding
 //
-// Declare INST macros *after* the matching DECL_SV_ENUM_OBJ[_BEGIN].
+// Declare ENUMERATOR macros *after* the matching DECL_SV_ENUM_OBJ[_BEGIN].
 // Registration order is declaration order (static initializers).
 //
-// Override: a later INST with an already-used encoding (value) replaces the
-// label in `names()`, redirects `::get()` / `get_by_value()` to the new
-// singleton, and chains `name()` of the earlier INST to the final name.
+// Override: a later ENUMERATOR with an already-used encoding (value) replaces
+// the label in `names()`, redirects `::get()` / `get_by_value()` to the new
+// singleton, and chains `name()` of the earlier ENUMERATOR to the final name.
 //
 // Duplicate *names* with different values are fatal.
 // Duplicate names with the same value are begrudgingly allowed.
@@ -558,7 +558,7 @@
         \
         `_SV_ENUM_OBJ_TYPE_STATICS \
         \
-        // Seed from BASE before any INST in this package registers. \
+        // Seed from BASE before any ENUMERATOR in this package registers. \
         protected static int _num_names_imported_from_base = _import_from_base(); \
         protected static function bit _import_from_base(); \
             _values = parent_enum_obj_t::_values; \
