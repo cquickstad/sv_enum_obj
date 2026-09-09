@@ -559,7 +559,7 @@
         `_SV_ENUM_OBJ_TYPE_STATICS \
         \
         // Seed from BASE before any ENUMERATOR in this package registers. \
-        protected static int _num_names_imported_from_base = _import_from_base(); \
+        protected static bit _side_effect_for_import = _import_from_base(); \
         protected static function bit _import_from_base(); \
             _values = parent_enum_obj_t::_values; \
             _two_value_values = parent_enum_obj_t::_two_value_values; \
@@ -567,7 +567,7 @@
             _registry_value = parent_enum_obj_t::_registry_value; \
             _registry_name = parent_enum_obj_t::_registry_name; \
             parent_enum_obj_t::_extended_by = _base_name; \
-            return _registry_name.size(); \
+            return 1; \
         endfunction \
         \
         `ifdef SV_ENUM_OBJ_UVM \
