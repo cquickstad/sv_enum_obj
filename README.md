@@ -130,11 +130,9 @@ The classes representing the individual enumerators are singletons and should ne
 
 Instead, a handle to the singleton for any enumerator may be retrieved with `::get()`:
 
-`red my_red = red::get(); // Good. Get the singleton. There can be only one!`
+`color c = red::get(); // OK, but don't get confused: it's an immutable singleton`
 
-The base class can be a handle to any of the child enumerators:
-
-`color c = red::get();`
+Also, note that `::get()` follows the chain of overrides (if any) and will return the last singleton in the enumeration declared to have that value.
 
 Just be sure not to try and change an immutable singleton:
 ```
@@ -259,7 +257,7 @@ int i = c.get_value();
 ```
 or
 ```
-blue b = blue::get();
+color b = blue::get(); // Immutable singleton
 int i = b.get_value();
 ```
 or simply
@@ -423,7 +421,7 @@ end
 $display("Now backwards:");
 c.set(c.last());
 forever begin
-    $display("%0s : %0d", c.name(), c);
+    $display("%0s : %0d", c.name(), c.get_value());
     if (c.is(c.first())) break;
     c.set(c.prev());
 end
