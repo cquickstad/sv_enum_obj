@@ -256,7 +256,7 @@
 // Registration order is declaration order (static initializers).
 //
 // Override: a later ENUMERATOR with an already-used encoding (value) replaces
-// the label in `names()`, redirects `::get()` / `get_by_value()` to the new
+// the label in `names()`, redirects `::get()` / `get_by_value()` to the final
 // singleton, and chains `name()` of the earlier ENUMERATOR to the final name.
 //
 // Duplicate *names* with different values are fatal.
