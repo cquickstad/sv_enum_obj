@@ -87,8 +87,7 @@ virtual class sv_enum_obj_base `ifdef SV_ENUM_OBJ_UVM extends uvm_object `endif 
     //
     // Fatals if `n` is not the name of a registered enumerator.
     //
-    // Call enum_type::names() or enum_instance.names() to get the set of
-    // registered enumerator names.
+    // Call holder_instance.names() to get the set of registered enumerator names.
     pure virtual function void set_by_name(string n);
 
     // Set the value held by this holder to the enumerator referenced by the
@@ -117,9 +116,9 @@ virtual class sv_enum_obj_base `ifdef SV_ENUM_OBJ_UVM extends uvm_object `endif 
     // When the base enumeration object is instantiated as a holder, the
     // increment and decrement methods cycle through all of the values/
     // enumerations of the set.
-    // Progression is in declaration order.
-    // Incrementing at the end will wrap to the beginning.
-    // Decrementing at the beginning will wrap to the beginning.
+    // Progression is in declaration order. (Not value order.)
+    // Incrementing at the last will wrap to the first.
+    // Decrementing at the first will wrap to the last.
     pure virtual function void increment();
     pure virtual function void decrement();
 
@@ -165,8 +164,8 @@ virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;
     //
     // Fatals if `v` is not a registered enumerator.
     //
-    // Call enum_type::values() or enum_instance.get_values() to get the set of
-    // registered enumerator values.
+    // Call holder_instance.get_values() to get the set of registered enumerator
+    // values.
     virtual function void set_by_value(SCALAR_T v);
         value = v;
         _init_obj();
