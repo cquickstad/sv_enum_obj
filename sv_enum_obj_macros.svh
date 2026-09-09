@@ -523,7 +523,7 @@
                 "enumerator. Call only on an instance of the holder ", \
                 "instead."}); \
             return -1; \
-        endfunction \
+        endfunction
 
 `define DECL_SV_ENUM_OBJ_ENUMERATOR_END \
     endclass

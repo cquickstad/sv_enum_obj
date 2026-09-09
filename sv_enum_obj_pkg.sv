@@ -29,9 +29,9 @@
 // PATCH — bug fix, comment, test, README typo.
 //
 `define SV_ENUM_OBJ_VERSION_MAJOR 1
-`define SV_ENUM_OBJ_VERSION_MINOR 0
-`define SV_ENUM_OBJ_VERSION_PATCH 1
-`define SV_ENUM_OBJ_VERSION "1.0.1"
+`define SV_ENUM_OBJ_VERSION_MINOR 1
+`define SV_ENUM_OBJ_VERSION_PATCH 0
+`define SV_ENUM_OBJ_VERSION "1.1.0"
 
 package sv_enum_obj_pkg;
 

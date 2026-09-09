@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0]
+### Added
+- Added set membership method: `is_in({...})`
+
 ## [1.0.1]
 ### Fixed
 - Minor documentation fixes.

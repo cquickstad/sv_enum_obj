@@ -350,31 +350,29 @@ assert(!(a inside {green, blue}));
 write
 ```
 color a = new();
-color b = new();
-color c = new();
-
-b.set(green::get());
-c.set(blue::get());
 a.set(green::get());
-assert(a.get_singleton() inside {b.get_singleton(), c.get_singleton()});
+assert(a.is_in({green::get(), blue::get()}));
 
 a.set(red::get());
-assert(!(a.get_singleton() inside {b.get_singleton(), c.get_singleton()}));
+assert(!(a.is_in({green::get(), blue::get()})));
 ```
 or
 ```
 color a = new();
-
+color b = new();
+color c = new();
 a.set(green::get());
-assert(a.get_singleton() inside {green::get(), blue::get()});
+b.set(green::get());
+c.set(blue::get());
+assert(a.is_in({b, c}));
 
 a.set(red::get());
-assert(!(a.get_singleton() inside {green::get(), blue::get()}));
+assert(!(a.is_in({b, c})));
 ```
 or
 ```
-assert(green::get() inside {green::get(), blue::get()});
-assert(green::value() inside {green::value(), blue::value()});
+assert(green::get().is_in({green::get(), blue::get()}));
+assert(!(red::get().is_in({green::get(), blue::get()})));
 ```
 
 ---

@@ -134,6 +134,15 @@ virtual class sv_enum_obj_base `ifdef SV_ENUM_OBJ_UVM extends uvm_object `endif 
     function bit is(sv_enum_obj_base other);
         return (other != null) && (get_singleton() == other.get_singleton());
     endfunction
+
+    virtual function bit is_in(sv_enum_obj_base set_q[$]);
+        foreach (set_q[i]) begin
+            sv_enum_obj_base ob = set_q[i];
+            if (ob != null) set_q[i] = ob.get_singleton();
+        end
+        return get_singleton() inside {set_q};
+    endfunction
+
 endclass
 
 virtual class sv_enum_obj#(type SCALAR_T=int) extends sv_enum_obj_base;

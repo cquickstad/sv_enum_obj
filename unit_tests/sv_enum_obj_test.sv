@@ -947,3 +947,25 @@ endpackage
     `ASSERT_GT(count[1'b0], 0)
     `ASSERT_GT(count[1'b1], 0)
 `END_SV_TEST
+
+`SV_TEST(test_sv_enum_is_in)
+    color c = new();
+    color c2 = new();
+    c.set_by_name("red");
+    `ASSERT_FALSE(c.is_in({blue::get(), green::get()}))
+    `ASSERT_TRUE(c.is_in({blue::get(), red::get()}))
+    `ASSERT_TRUE(c.is_in({red::get(), indigo::get()}))
+    c.set_by_name("purple");
+    `ASSERT_TRUE(c.is_in({red::get(), indigo::get()}))
+
+    c2.set(violet::get());
+    `ASSERT_TRUE(c.is_in({c2, red::get()}))
+    c2.set(blue::get());
+    `ASSERT_FALSE(c.is_in({red::get(), c2}))
+
+    `ASSERT_TRUE(blue::get().is_in({c2, red::get() }))
+
+    `ASSERT_FALSE(c.is_in({})) // Empty case
+    `ASSERT_FALSE(c.is_in({null})) // False null case
+    `ASSERT_TRUE(c.is_in({null, indigo::get()})) // True null case
+`END_SV_TEST
