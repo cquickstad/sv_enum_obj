@@ -775,8 +775,8 @@ endpackage
 
     // When unknowns are in all of the values, max_value() and min_value() will
     // $fatal because no max or min can be determined.
-    // `ASSERT_EQ(four_value_enum::max_value(), 3'b000)
-    // `ASSERT_EQ(four_value_enum::min_value(), 3'b000)
+    // `ASSERT_EQ(e.max_value(), 3'b000)
+    // `ASSERT_EQ(e.min_value(), 3'b000)
     `ASSERT_EQ(e.next_unused_value(), 3'b000)
 
     `ASSERT_EQ(enum_value_0x::value(), 3'b00x)
