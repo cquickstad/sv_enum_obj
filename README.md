@@ -1,7 +1,81 @@
 # sv_enum_obj
-### An object-oriented alternative to SystemVerilog's native enumerated types.
-## SystemVerilog's Enums
-The SystemVerilog language (IEEE Std 1800™-2023), like most other languages, offers enumerated types.  For example:
+
+Object-based enumerations for SystemVerilog testbenches: a **singleton per
+value** plus a **randomizable holder**. Attach methods to encodings, add or
+replace values without editing the original type, and keep package-local forks.
+Optional UVM factory support.
+
+**Current release:** 1.1.1 · [CHANGELOG](CHANGELOG.md) · [License: Apache-2.0](LICENSE)
+
+| Use it when | Do not use it when |
+|---|---|
+| A VIP enum is closed and you need another opcode or different behavior | The value must go on a wire / be synthesized |
+| Related `case` logic should live on the value (polymorphism) | You need a drop-in for `typedef enum` |
+| A downstream package must extend the set without forking the source | You need `inside {red, green}` or enum case items on the object itself |
+
+Tested on Xcelium 25.03, Questa 2025.2, VCS 2025.06; UVM 1.1d through IEEE 1800.2-2020-3.1.
+
+UVM is **opt-in**: `+define+SV_ENUM_OBJ_UVM`.
+
+## Try it
+
+Filelist:
+
+```text
++incdir+<path-to-sv_enum_obj>
+sv_enum_obj_pkg.sv
+```
+
+```systemverilog
+`include "sv_enum_obj_pkg.sv"
+import sv_enum_obj_pkg::*;
+
+`DECL_SV_ENUM_OBJ_BEGIN(op)
+    virtual function int calc(int a, int b);
+        _init_obj();
+        return _obj.calc(a, b);
+    endfunction
+`DECL_SV_ENUM_OBJ_END
+
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, add)
+    virtual function int calc(int a, int b);
+        return a + b;
+    endfunction
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
+
+`DECL_SV_ENUM_OBJ_ENUMERATOR_BEGIN(op, mul)
+    virtual function int calc(int a, int b);
+        return a * b;
+    endfunction
+`DECL_SV_ENUM_OBJ_ENUMERATOR_END
+
+module sv_enum_obj_example;
+    initial begin
+        op holder = new();          // mutable, randomizable
+        void'(holder.randomize());
+        $display("%s(6, 7) = %0d",
+                 holder.name(), holder.calc(6, 7));
+
+        holder.set(mul::get());     // or set_by_name("mul")
+        $display("%s(6, 7) = %0d",
+                 holder.name(), holder.calc(6, 7));
+
+        $display("mul op encoding = %0d", mul::value());
+        $finish;
+    end
+endmodule
+```
+
+No UVM required. `add::get()` is the immutable singleton; `op holder = new()` is the holder you randomize and assign. Constraints talk to `holder.value`, not to the handle.
+
+A later package can add `div` or replace `mul` with `` `DECL_SV_ENUM_OBJ_EXTEND `` / `` `DECL_SV_ENUM_OBJ_ENUMERATOR `` without editing this file. Details below.
+
+Runnable copies live in [`examples/`](examples/) and do not need uvm_unit.
+
+## Why not a native `enum`?
+
+The SystemVerilog language (IEEE Std 1800-2023) offers enumerated types:
+
 ```
 typedef enum {
     red,
@@ -9,87 +83,37 @@ typedef enum {
     blue
 } color;
 ```
-### Advantages
-Enumerated types can be defined with an 'enum base type' and the individual name declarations can be assigned integral numerical values. This, along with static type casting, makes enums an attractive solution for assigning meaning to signal values, allowing programmers to feel good about eliminating Magic Number code smells. For example:
-```
-typedef enum logic [1:0] {
-    OKAY = 2'b00,
-    EXOKAY = 2'b01,
-    SLVERR = 2'b10,
-    DECERR = 2'b11
-} xRESP_t;
 
-function xRESP_t decode_xRESP(logic [1:0] field);
-    return xRESP_t'(field);
-endfunction
-```
-Additionally, SystemVerilog's randomization works natively with enumerated types, making them indispensable in the test-bench.  For example:
-```
-class axi_item extends uvm_sequence_item;
-    ...
-    rand xRESP_t xRESP;
-    constraint xRESP_c {xRESP inside {OKAY, EXOKAY};}
-    ...
-endclass
-```
-Finally, SystemVerilog offers built-in methods for enums, such as `.name()`, which returns the string representation of the value.  For example:
-```
-function void check_for_error(xRESP_t xRESP);
-    if (!(xRESP inside {OKAY, EXOKAY})) begin
-        `uvm_error("XRESP_ERROR", {"The following error occurred: ",
-            xRESP.name()})
-    end
-endfunction
-```
-### Problems
-Upon encountering an enum in another package such as a Verification IP (VIP), one finds that they are stuck with that definition. This is because enum definitions are fixed and cannot be changed or expanded. For example, if someone used a software package with `typedef enum {red, green, blue} color;` defined it would be impossible for them to add `purple` or override `red` to `crimson`.  This violates the 'O' in the SOLID design principles -- the Open-closed principle, which states that _"software entities should be open for extension, but closed for modification."_  This is a major hurdle to reuse. It is not uncommon for a project to need to tweak a behavior or add an opcode to a field that was left with "reserved" space.
+Native enums give you named encodings, static casting onto signal values, built-in randomization, and `.name()`. They are the right tool for RTL and for simple testbench fields.
 
-Additionally, using SystemVerilog enums tends to lead to several code smells:
-- **Switch/Case Statements** - Switch/case statements (or equivalent if/else chains) are almost always a missed opportunity to use polymorphism. They create a dependency fan-out problem that can be solved with a polymorphic abstract base class interface.
-- **Primitive Obsession** - Primitive obsession is the use of primitives (e.g. integers, booleans, strings, or arrays) instead of small objects for simple tasks. In particular, enums are really just fancy integers. Often, functionality related to the enum gets scattered around the codebase, often being duplicated. This leads to other code smells and maintainability problems.
-- **Shotgun Surgery** - Shotgun surgery is when making a fix or modification to a single concept requires making changes in many different places around the codebase.  It's a sign that the concept was not properly abstracted. A simple concept change suddenly becomes complex in implementation. Some of the needed points of change can be forgotten, leading to bugs.
+They are a poor tool when a downstream project must change the set. An enum in a VIP package is closed: you cannot add `purple` or replace `red` with `crimson` without editing the original type. Related behavior then spreads through `case` statements (primitive obsession, shotgun surgery).
 
-Verification engineers that use enums are often not using the best tool for the job.
+**sv_enum_obj** keeps the useful parts of native enums (named encodings, iteration, string name, randomization via a holder, optional UVM field automation) and adds methods on values plus extension without modifying the original declaration.
 
-### Solution
-All of these problems can be overcome by using objects instead of enums.  However, most digital logic verification engineers find it difficult to give up the advantages that come built-in with SystemVerilog's enums. Furthermore, they often lack the time or skill to develop the object-oriented solution and end up developing code that is hard to maintain and difficult to reuse.
+It does **not**:
 
-**sv_enum_obj** is the library that provides the solution.  It...
-- implements the following advantages that enums have natively:
-    - named encodings
-    - iteration
-    - string name
-    - randomization (using a holder/wrapper)
-    - optional UVM field automation
-- provides macros to declare classes that represent enumerated types with a similar number of lines of code to the native enums (when not including custom method definitions).
-- allows methods to be added to the objects so that all of those switch/case statements can be solved with polymorphism. All of that code scattered around the codebase can be consolidated into an object that encapsulates the concept being abstracted.
-- allows new enum-objects to be easily added. Downstream projects can reuse your code without requiring intrusive changes. New enumerators can be added to the enumeration. Existing enumerators can be overridden.
-
-Note that sv_enum_obj does not or cannot address the following aspects of SystemVerilog's native enums:
-- sv_enum_obj is not synthesizable; not for RTL or wires.
-- sv_enum_obj is not a drop-in replacement for native enums.
-- sv_enum_obj cannot natively be used in `inside {red, blue}` type statements; users must use `.value` or `get_singleton()` instead.
-- sv_enum_obj cannot natively be used as case items, in packed packing, or with implicit integral conversion.
-- Constraints cannot call the polymorphic methods you add to sv_enum_obj without a side-effect-free helper.
+- synthesize, or belong on a wire
+- replace `typedef enum` as a drop-in
+- support `inside {red, blue}` on the object (use `.value`, `get_singleton()`, or `is_in(...)`)
+- work as case items, packed packing, or implicit integral conversion
+- let constraints call your polymorphic methods without a side-effect-free helper
 
 ## Compatibility
 
-The library itself does not require UVM. When UVM is present, factory
-registration, `create()`, field automation, `compare()`, and type
-overrides are compiled in.
+The library does not require UVM. When you compile with `+define+SV_ENUM_OBJ_UVM`, factory registration, `create()`, field automation, `compare()`, and type overrides are compiled in.
 
 | Piece | Tested | Notes |
 |---|---|---|
 | Simulator | Cadence Xcelium (`xrun`) | 25.03-s002 |
 |           | Siemens Questa | 2025.2 |
 |           | Synopsys VCS | 2025.06 |
-| UVM | UVM 1.1d |  |
-|     | UVM 1.2 |  |
-|     | UVM IEEE 1800.2-2017-1.0 |  |
-|     | UVM IEEE 1800.2-2020-2.0 |  |
-|     | UVM IEEE 1800.2-2020-3.1      |  |
+| UVM | UVM 1.1d | opt-in via `SV_ENUM_OBJ_UVM` |
+|     | UVM 1.2 | |
+|     | UVM IEEE 1800.2-2017-1.0 | |
+|     | UVM IEEE 1800.2-2020-2.0 | |
+|     | UVM IEEE 1800.2-2020-3.1 | |
 
-UVM support is enabled by setting `+define+SV_ENUM_OBJ_UVM`.
+Include `uvm_macros.svh` in the same compilation unit (or pass `+define+SV_ENUM_OBJ_UVM`) when you want the UVM path. `import uvm_pkg::*;` alone does not enable it.
 
 ## How To Use
 ### Declaration

@@ -1,0 +1,15 @@
+xcelium.d/
+xrun.log
+xrun.history
+tr_db.log
+simv
+simv.daidir/
+csrc/
+ucli.key
+vc_hdrs.h
+work/
+transcript
+vsim.wlf
+*.log
+INCA_libs/
+qrun.out/

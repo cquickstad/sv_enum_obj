@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1]
+### Added
+- Added `examples/` with standalone programs that run without uvm_unit.
+
+### Changed
+- Updated README to open with a brief explanation of sv_enum_obj and a short example instead of a lecture on native enums.
+
 ## [1.1.0]
 ### Added
 - Added set membership method: `is_in({...})`
